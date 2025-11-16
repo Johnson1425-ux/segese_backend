@@ -211,15 +211,6 @@ app.use('/api/corpses', corpsesRoutes);
 app.use('/api/cabinets', cabinetRoutes);
 app.use('/api/releases', releaseRoutes);
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../build')));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
-  });
-}
-
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
