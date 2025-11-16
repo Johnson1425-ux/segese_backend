@@ -1,0 +1,3597 @@
+2025-08-26 05:12:07 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 05:12:06 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 13984,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 81657856,
+      "heapTotal": 58740736,
+      "heapUsed": 26753936,
+      "external": 20628691,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 100365.656
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 05:38:42 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 05:38:42 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 2608,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 80683008,
+      "heapTotal": 58740736,
+      "heapUsed": 28291224,
+      "external": 20628690,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 101960.843
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 10:12:12 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 10:12:12 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 12132,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 75460608,
+      "heapTotal": 38293504,
+      "heapUsed": 28593264,
+      "external": 20628691,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 1207.859
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 12:31:35 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 12:31:35 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 8448,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 68734976,
+      "heapTotal": 29380608,
+      "heapUsed": 27034256,
+      "external": 20628690,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 9571.125
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 12:33:31 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 12:33:31 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 5888,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 81973248,
+      "heapTotal": 57962496,
+      "heapUsed": 31519560,
+      "external": 20628691,
+      "arrayBuffers": 18264304
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 9686.843
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 14:22:49 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 14:22:49 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 7664,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 72159232,
+      "heapTotal": 27545600,
+      "heapUsed": 24987016,
+      "external": 20628690,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 16245.093
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 14:33:48 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 14:33:48 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 11976,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 86888448,
+      "heapTotal": 60575744,
+      "heapUsed": 26736936,
+      "external": 20628690,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 16903.937
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 14:38:26 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 14:38:26 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 4524,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 87437312,
+      "heapTotal": 59535360,
+      "heapUsed": 29464000,
+      "external": 20628691,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 17182.421
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 14:57:46 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 14:57:46 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 148,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 86487040,
+      "heapTotal": 57954304,
+      "heapUsed": 30706024,
+      "external": 20628692,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 18342.187
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 15:00:28 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 15:00:28 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 10432,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 85975040,
+      "heapTotal": 57954304,
+      "heapUsed": 30429288,
+      "external": 20628692,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 18504.218
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 15:08:15 [ERROR]: uncaughtException: authorize is not defined
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+ReferenceError: authorize is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:28:3)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Tue Aug 26 2025 15:08:15 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 12432,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 86155264,
+      "heapTotal": 57962496,
+      "heapUsed": 31473144,
+      "external": 20628692,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 18970.718
+  },
+  "trace": [
+    {
+      "column": 3,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 28,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-26 15:28:18 [ERROR]: uncaughtException: Cannot find module './routes/users'
+Require stack:
+- C:\Users\Admin\Documents\new\server\server.js
+Error: Cannot find module './routes/users'
+Require stack:
+- C:\Users\Admin\Documents\new\server\server.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:22:20)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+Error: Cannot find module './routes/users'
+Require stack:
+- C:\Users\Admin\Documents\new\server\server.js
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Function._load (node:internal/modules/cjs/loader:1211:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:22:20)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+{
+  "error": {
+    "code": "MODULE_NOT_FOUND",
+    "requireStack": [
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ]
+  },
+  "exception": true,
+  "date": "Tue Aug 26 2025 15:28:18 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 13196,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 86360064,
+      "heapTotal": 58740736,
+      "heapUsed": 29172232,
+      "external": 20628691,
+      "arrayBuffers": 18264304
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 20174.312
+  },
+  "trace": [
+    {
+      "column": 15,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._resolveFilename",
+      "line": 1401,
+      "method": "_resolveFilename",
+      "native": false
+    },
+    {
+      "column": 19,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "defaultResolveImpl",
+      "line": 1057,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 22,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "resolveForCJSWithHooks",
+      "line": 1062,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 37,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1211,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 22,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    }
+  ]
+}
+2025-08-28 20:10:56 [ERROR]: uncaughtException: Router.use() requires a middleware function but got a Object
+TypeError: Router.use() requires a middleware function but got a Object
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\router\index.js:469:13)
+    at Function.<anonymous> (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:227:21)
+    at Array.forEach (<anonymous>)
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:224:7)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:110:5)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+TypeError: Router.use() requires a middleware function but got a Object
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\router\index.js:469:13)
+    at Function.<anonymous> (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:227:21)
+    at Array.forEach (<anonymous>)
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:224:7)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:110:5)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+{
+  "error": {},
+  "exception": true,
+  "date": "Thu Aug 28 2025 20:10:56 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 7052,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 86818816,
+      "heapTotal": 59682816,
+      "heapUsed": 37181760,
+      "external": 20670684,
+      "arrayBuffers": 18264628
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 30891.968
+  },
+  "trace": [
+    {
+      "column": 13,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\node_modules\\express\\lib\\router\\index.js",
+      "function": "Function.use",
+      "line": 469,
+      "method": "use",
+      "native": false
+    },
+    {
+      "column": 21,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\node_modules\\express\\lib\\application.js",
+      "function": null,
+      "line": 227,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": null,
+      "file": null,
+      "function": "Array.forEach",
+      "line": null,
+      "method": "forEach",
+      "native": false
+    },
+    {
+      "column": 7,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\node_modules\\express\\lib\\application.js",
+      "function": "Function.use",
+      "line": 224,
+      "method": "use",
+      "native": false
+    },
+    {
+      "column": 5,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 110,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    }
+  ]
+}
+2025-08-28 20:12:01 [ERROR]: uncaughtException: Router.use() requires a middleware function but got a Object
+TypeError: Router.use() requires a middleware function but got a Object
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\router\index.js:469:13)
+    at Function.<anonymous> (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:227:21)
+    at Array.forEach (<anonymous>)
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:224:7)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:110:5)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+TypeError: Router.use() requires a middleware function but got a Object
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\router\index.js:469:13)
+    at Function.<anonymous> (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:227:21)
+    at Array.forEach (<anonymous>)
+    at Function.use (C:\Users\Admin\Documents\new\server\node_modules\express\lib\application.js:224:7)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:110:5)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+{
+  "error": {},
+  "exception": true,
+  "date": "Thu Aug 28 2025 20:12:01 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 13088,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 89780224,
+      "heapTotal": 58896384,
+      "heapUsed": 39856256,
+      "external": 20670683,
+      "arrayBuffers": 18264627
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 30956.75
+  },
+  "trace": [
+    {
+      "column": 13,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\node_modules\\express\\lib\\router\\index.js",
+      "function": "Function.use",
+      "line": 469,
+      "method": "use",
+      "native": false
+    },
+    {
+      "column": 21,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\node_modules\\express\\lib\\application.js",
+      "function": null,
+      "line": 227,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": null,
+      "file": null,
+      "function": "Array.forEach",
+      "line": null,
+      "method": "forEach",
+      "native": false
+    },
+    {
+      "column": 7,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\node_modules\\express\\lib\\application.js",
+      "function": "Function.use",
+      "line": 224,
+      "method": "use",
+      "native": false
+    },
+    {
+      "column": 5,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 110,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    }
+  ]
+}
+2025-08-30 22:59:18 [ERROR]: uncaughtException: Invalid or unexpected token
+C:\Users\Admin\Documents\new\server\routes\auth.js:188
+    /*if (!user.isActive) {
+
+SyntaxError: Invalid or unexpected token
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+C:\Users\Admin\Documents\new\server\routes\auth.js:188
+    /*if (!user.isActive) {
+
+SyntaxError: Invalid or unexpected token
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:21:20)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sat Aug 30 2025 22:59:18 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 11404,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 79126528,
+      "heapTotal": 37752832,
+      "heapUsed": 22018120,
+      "external": 20643661,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 95368.953
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 21,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-30 22:59:36 [ERROR]: uncaughtException: Invalid or unexpected token
+C:\Users\Admin\Documents\new\server\middleware\auth.js:49
+    /*if (user.isLocked()) {
+
+SyntaxError: Invalid or unexpected token
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:5:48)
+C:\Users\Admin\Documents\new\server\middleware\auth.js:49
+    /*if (user.isLocked()) {
+
+SyntaxError: Invalid or unexpected token
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\auth.js:5:48)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sat Aug 30 2025 22:59:36 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 13408,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 84512768,
+      "heapTotal": 58216448,
+      "heapUsed": 30172496,
+      "external": 20655022,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 95386.812
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 48,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\auth.js",
+      "function": null,
+      "line": 5,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 00:59:00 [ERROR]: uncaughtException: S is not defined
+ReferenceError: S is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\models\Patient.js:76:20)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+ReferenceError: S is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\models\Patient.js:76:20)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 00:59:00 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 10160,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 79720448,
+      "heapTotal": 58224640,
+      "heapUsed": 33007744,
+      "external": 20655023,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 102551.5
+  },
+  "trace": [
+    {
+      "column": 20,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\models\\Patient.js",
+      "function": null,
+      "line": 76,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 17,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\patients.js",
+      "function": null,
+      "line": 3,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 01:01:10 [ERROR]: uncaughtException: Invalid regular expression: missing /
+C:\Users\Admin\Documents\new\server\models\Patient.js:89
+  }*/],
+    ^
+
+SyntaxError: Invalid regular expression: missing /
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+C:\Users\Admin\Documents\new\server\models\Patient.js:89
+  }*/],
+    ^
+
+SyntaxError: Invalid regular expression: missing /
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 01:01:10 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 15200,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 79921152,
+      "heapTotal": 58224640,
+      "heapUsed": 32964056,
+      "external": 20655023,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 102680.906
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 17,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\patients.js",
+      "function": null,
+      "line": 3,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 01:01:12 [ERROR]: uncaughtException: Invalid regular expression: missing /
+C:\Users\Admin\Documents\new\server\models\Patient.js:77
+  allergies: [/{
+              ^
+
+SyntaxError: Invalid regular expression: missing /
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+C:\Users\Admin\Documents\new\server\models\Patient.js:77
+  allergies: [/{
+              ^
+
+SyntaxError: Invalid regular expression: missing /
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 01:01:12 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 14632,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 79908864,
+      "heapTotal": 57962496,
+      "heapUsed": 32954080,
+      "external": 20655022,
+      "arrayBuffers": 18264480
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 102683.078
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 17,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\patients.js",
+      "function": null,
+      "line": 3,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 01:01:38 [ERROR]: uncaughtException: S is not defined
+ReferenceError: S is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\models\Patient.js:77:15)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+ReferenceError: S is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\models\Patient.js:77:15)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 01:01:38 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 7704,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 80216064,
+      "heapTotal": 57962496,
+      "heapUsed": 33133928,
+      "external": 20655022,
+      "arrayBuffers": 18264480
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 102709.625
+  },
+  "trace": [
+    {
+      "column": 15,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\models\\Patient.js",
+      "function": null,
+      "line": 77,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 17,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\patients.js",
+      "function": null,
+      "line": 3,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 01:01:41 [ERROR]: uncaughtException: Str is not defined
+ReferenceError: Str is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\models\Patient.js:77:15)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+ReferenceError: Str is not defined
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\models\Patient.js:77:15)
+    at Module._compile (node:internal/modules/cjs/loader:1730:14)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\routes\patients.js:3:17)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 01:01:41 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 12764,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 79466496,
+      "heapTotal": 57954304,
+      "heapUsed": 32109232,
+      "external": 20655023,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 102712.062
+  },
+  "trace": [
+    {
+      "column": 15,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\models\\Patient.js",
+      "function": null,
+      "line": 77,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1730,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 17,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\routes\\patients.js",
+      "function": null,
+      "line": 3,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 16:45:11 [ERROR]: uncaughtException: Unexpected identifier 'data'
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+      ^^^^
+
+SyntaxError: Unexpected identifier 'data'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+      ^^^^
+
+SyntaxError: Unexpected identifier 'data'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 16:45:11 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 12804,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 85188608,
+      "heapTotal": 59535360,
+      "heapUsed": 31145792,
+      "external": 20655022,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 159322.156
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 23,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 23,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 16:45:13 [ERROR]: uncaughtException: Unexpected identifier 'data'
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+      ^^^^
+
+SyntaxError: Unexpected identifier 'data'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+      ^^^^
+
+SyntaxError: Unexpected identifier 'data'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 16:45:13 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 15724,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 84942848,
+      "heapTotal": 58224640,
+      "heapUsed": 33133000,
+      "external": 20655023,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 159324.515
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 23,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 23,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 16:45:18 [ERROR]: uncaughtException: Unexpected token ':'
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+          ^
+
+SyntaxError: Unexpected token ':'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+          ^
+
+SyntaxError: Unexpected token ':'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 16:45:18 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 656,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 84070400,
+      "heapTotal": 57954304,
+      "heapUsed": 32269296,
+      "external": 20655023,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 159329.046
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 23,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 23,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-08-31 16:45:25 [ERROR]: uncaughtException: Unexpected identifier 'data'
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+      ^^^^
+
+SyntaxError: Unexpected identifier 'data'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+C:\Users\Admin\Documents\new\server\routes\patients.js:84
+      data: patients
+      ^^^^
+
+SyntaxError: Unexpected identifier 'data'
+    at wrapSafe (node:internal/modules/cjs/loader:1662:18)
+    at Module._compile (node:internal/modules/cjs/loader:1704:20)
+    at Object..js (node:internal/modules/cjs/loader:1895:10)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1487:12)
+    at require (node:internal/modules/helpers:135:16)
+    at Object.<anonymous> (C:\Users\Admin\Documents\new\server\server.js:23:23)
+{
+  "error": {},
+  "exception": true,
+  "date": "Sun Aug 31 2025 16:45:25 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 7900,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 85946368,
+      "heapTotal": 59797504,
+      "heapUsed": 31052464,
+      "external": 20655022,
+      "arrayBuffers": 18264479
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 159336
+  },
+  "trace": [
+    {
+      "column": 18,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "line": 1662,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 20,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1704,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 10,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Object..js",
+      "line": 1895,
+      "method": ".js",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1465,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Function._load",
+      "line": 1282,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1487,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 23,
+      "file": "C:\\Users\\Admin\\Documents\\new\\server\\server.js",
+      "function": null,
+      "line": 23,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+2025-09-01 01:45:35 [ERROR]: uncaughtException: require is not defined in ES module scope, you can use import instead
+ReferenceError: require is not defined in ES module scope, you can use import instead
+    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+ReferenceError: require is not defined in ES module scope, you can use import instead
+    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+{
+  "error": {},
+  "exception": true,
+  "date": "Mon Sep 01 2025 01:45:35 GMT+0300 (East Africa Time)",
+  "process": {
+    "pid": 10772,
+    "uid": null,
+    "gid": null,
+    "cwd": "C:\\Users\\Admin\\Documents\\new\\server",
+    "execPath": "C:\\node-v22.16.0-win-x64\\node.exe",
+    "version": "v22.16.0",
+    "argv": [
+      "C:\\node-v22.16.0-win-x64\\node.exe",
+      "C:\\Users\\Admin\\Documents\\new\\server\\server.js"
+    ],
+    "memoryUsage": {
+      "rss": 82776064,
+      "heapTotal": 38801408,
+      "heapUsed": 25762408,
+      "external": 20796793,
+      "arrayBuffers": 18264303
+    }
+  },
+  "os": {
+    "loadavg": [
+      0,
+      0,
+      0
+    ],
+    "uptime": 191746.5
+  },
+  "trace": [
+    {
+      "column": 1,
+      "file": "file:///C:/Users/Admin/Documents/new/server/server.js",
+      "function": null,
+      "line": 1,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 25,
+      "file": "node:internal/modules/esm/module_job",
+      "function": "ModuleJob.run",
+      "line": 274,
+      "method": "run",
+      "native": false
+    },
+    {
+      "column": 26,
+      "file": "node:internal/modules/esm/loader",
+      "function": "async onImport.tracePromise.__proto__",
+      "line": 644,
+      "method": "__proto__",
+      "native": false
+    },
+    {
+      "column": 5,
+      "file": "node:internal/modules/run_main",
+      "function": "async asyncRunEntryPointWithESMLoader",
+      "line": 117,
+      "method": null,
+      "native": false
+    }
+  ]
+}
+{"date":"Mon Sep 01 2025 01:55:34 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\nReferenceError: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\n    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":192345.25},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264303,"external":20688633,"heapTotal":38531072,"heapUsed":21777624,"rss":83095552},"pid":15436,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\n    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 01:55:34","trace":[{"column":null,"file":null,"function":null,"line":null,"method":null,"native":false},{"column":1,"file":"file:///C:/Users/Admin/Documents/new/server/server.js","function":null,"line":1,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 01:57:25 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\nReferenceError: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\n    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":192455.765},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264479,"external":20811764,"heapTotal":38539264,"heapUsed":22355376,"rss":83292160},"pid":3116,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\n    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 01:57:25","trace":[{"column":null,"file":null,"function":null,"line":null,"method":null,"native":false},{"column":1,"file":"file:///C:/Users/Admin/Documents/new/server/server.js","function":null,"line":1,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:44:36 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195287.671},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264304,"external":20796793,"heapTotal":38277120,"heapUsed":27757256,"rss":80896000},"pid":17308,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:44:37","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:44:48 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195299.359},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38277120,"heapUsed":27904168,"rss":81080320},"pid":11732,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:44:48","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:46:49 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195419.828},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38277120,"heapUsed":27925728,"rss":81211392},"pid":16884,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:46:49","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:47:03 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195434.218},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38006784,"heapUsed":27428880,"rss":81235968},"pid":1040,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:47:03","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:47:22 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195453.531},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38539264,"heapUsed":27806040,"rss":81428480},"pid":11860,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:47:22","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:47:24 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195455.453},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38268928,"heapUsed":26962440,"rss":81367040},"pid":8440,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:47:24","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:48:14 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195505.218},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38277120,"heapUsed":27957200,"rss":80977920},"pid":10856,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:48:14","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:48:15 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195506.234},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38277120,"heapUsed":28045816,"rss":81338368},"pid":16152,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:48:15","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:49:43 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195594},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38277120,"heapUsed":27842368,"rss":81616896},"pid":6164,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:49:43","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:49:55 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:10:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195606.359},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38277120,"heapUsed":27925352,"rss":81100800},"pid":11576,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:10:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:49:55","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":10,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:51:17 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: forgotPassword is not defined\nReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:10:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195688.609},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38539264,"heapUsed":27842376,"rss":81805312},"pid":11220,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: forgotPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:10:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:51:17","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":10,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:51:22 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: resetPassword is not defined\nReferenceError: resetPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195693.187},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38006784,"heapUsed":27201328,"rss":80748544},"pid":6572,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: resetPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:51:22","trace":[{"column":42,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 02:51:25 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: resetPassword is not defined\nReferenceError: resetPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":195696.14},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264480,"external":20823124,"heapTotal":38277120,"heapUsed":27989248,"rss":81612800},"pid":2680,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: resetPassword is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:11:42\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 02:51:25","trace":[{"column":42,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":11,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 03:10:10 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: _URL is not defined\nReferenceError: _URL is not defined\n    at file:///C:/Users/Admin/Documents/new/server/server.js:34:28\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":196821.312},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264803,"external":20865116,"heapTotal":58896384,"heapUsed":36224416,"rss":91234304},"pid":4892,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: _URL is not defined\n    at file:///C:/Users/Admin/Documents/new/server/server.js:34:28\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 03:10:10","trace":[{"column":28,"file":"file:///C:/Users/Admin/Documents/new/server/server.js","function":null,"line":34,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 01 2025 03:11:58 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\nReferenceError: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\n    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":196929.546},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264479,"external":20811764,"heapTotal":38531072,"heapUsed":21944536,"rss":82571264},"pid":5084,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: require is not defined in ES module scope, you can use import instead\nThis file is being treated as an ES module because it has a '.js' file extension and 'C:\\Users\\Admin\\Documents\\new\\server\\package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.\n    at file:///C:/Users/Admin/Documents/new/server/server.js:1:1\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-01 03:11:58","trace":[{"column":null,"file":null,"function":null,"line":null,"method":null,"native":false},{"column":1,"file":"file:///C:/Users/Admin/Documents/new/server/server.js","function":null,"line":1,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 08 2025 20:53:23 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: asyncHandler is not defined\nReferenceError: asyncHandler is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/users.js:137:24\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":12282.5},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264303,"external":20697548,"heapTotal":59002880,"heapUsed":25827456,"rss":86839296},"pid":2320,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: asyncHandler is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/users.js:137:24\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-08 20:53:23","trace":[{"column":24,"file":"file:///C:/Users/Admin/Documents/new/server/routes/users.js","function":null,"line":137,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Mon Sep 08 2025 20:53:33 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: asyncHandler is not defined\nReferenceError: asyncHandler is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/users.js:137:24\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":12292.015},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264303,"external":20697550,"heapTotal":58748928,"heapUsed":29634152,"rss":87216128},"pid":7544,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: asyncHandler is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/users.js:137:24\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-08 20:53:33","trace":[{"column":24,"file":"file:///C:/Users/Admin/Documents/new/server/routes/users.js","function":null,"line":137,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Tue Sep 23 2025 02:36:59 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: body is not defined\nReferenceError: body is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:50:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":110049.109},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264304,"external":20697549,"heapTotal":38268928,"heapUsed":28547248,"rss":75657216},"pid":12256,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: body is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:50:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-23 02:36:59","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":50,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Tue Sep 23 2025 02:37:07 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: body is not defined\nReferenceError: body is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:50:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":110056.656},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264304,"external":20697549,"heapTotal":39063552,"heapUsed":26540112,"rss":77111296},"pid":8808,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: body is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:50:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-23 02:37:07","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":50,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Tue Sep 23 2025 02:43:18 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: body is not defined\nReferenceError: body is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:70:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":110428.359},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\new\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\new\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264304,"external":20697549,"heapTotal":38793216,"heapUsed":25942944,"rss":77185024},"pid":13716,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: body is not defined\n    at file:///C:/Users/Admin/Documents/new/server/routes/auth.js:70:32\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-09-23 02:43:18","trace":[{"column":32,"file":"file:///C:/Users/Admin/Documents/new/server/routes/auth.js","function":null,"line":70,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Wed Oct 08 2025 17:25:57 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: router.route(...).get(...).pgst is not a function\nTypeError: router.route(...).get(...).pgst is not a function\n    at file:///C:/Users/Admin/Documents/server/routes/labTests.js:21:4\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":418593.765},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264303,"external":20805709,"heapTotal":59789312,"heapUsed":35263872,"rss":87748608},"pid":16468,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"TypeError: router.route(...).get(...).pgst is not a function\n    at file:///C:/Users/Admin/Documents/server/routes/labTests.js:21:4\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-10-08 17:25:57","trace":[{"column":4,"file":"file:///C:/Users/Admin/Documents/server/routes/labTests.js","function":null,"line":21,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
+{"date":"Thu Oct 09 2025 13:58:41 GMT+0300 (East Africa Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: mongoose is not defined\nReferenceError: mongoose is not defined\n    at file:///C:/Users/Admin/Documents/server/models/Medicine.js:1:24\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","os":{"loadavg":[0,0,0],"uptime":492555.859},"process":{"argv":["C:\\node-v22.16.0-win-x64\\node.exe","C:\\Users\\Admin\\Documents\\server\\server.js"],"cwd":"C:\\Users\\Admin\\Documents\\server","execPath":"C:\\node-v22.16.0-win-x64\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":18264304,"external":20805709,"heapTotal":59265024,"heapUsed":41045144,"rss":88547328},"pid":5172,"uid":null,"version":"v22.16.0"},"service":"user-service","stack":"ReferenceError: mongoose is not defined\n    at file:///C:/Users/Admin/Documents/server/models/Medicine.js:1:24\n    at ModuleJob.run (node:internal/modules/esm/module_job:274:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:644:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)","timestamp":"2025-10-09 13:58:41","trace":[{"column":24,"file":"file:///C:/Users/Admin/Documents/server/models/Medicine.js","function":null,"line":1,"method":null,"native":false},{"column":25,"file":"node:internal/modules/esm/module_job","function":"ModuleJob.run","line":274,"method":"run","native":false},{"column":26,"file":"node:internal/modules/esm/loader","function":"async onImport.tracePromise.__proto__","line":644,"method":"__proto__","native":false},{"column":5,"file":"node:internal/modules/run_main","function":"async asyncRunEntryPointWithESMLoader","line":117,"method":null,"native":false}]}
