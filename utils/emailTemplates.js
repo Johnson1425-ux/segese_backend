@@ -6,7 +6,7 @@ export const getEmailTemplate = (type, data) => {
       .header { padding: 30px 20px; text-align: center; border-bottom: 2px solid #e5e7eb; }
       .content { padding: 30px 20px; }
       .footer { padding: 20px; text-align: center; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; }
-      .button { display: inline-block; padding: 12px 30px; background: #000; color: #fff; text-decoration: none; border-radius: 4px; margin: 20px 0; }
+      .button { display: inline-block; padding: 12px 30px; background: #000000; color: #ffffff; text-decoration: none; border-radius: 4px; margin: 20px 0; }
       .link-box { background: #f9fafb; padding: 15px; border: 1px solid #e5e7eb; border-radius: 4px; word-break: break-all; font-size: 14px; color: #6b7280; }
     </style>
   `;
