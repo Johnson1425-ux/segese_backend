@@ -23,10 +23,10 @@ const sendEmail = async (options) => {
         // Remove rejectUnauthorized: false in production
         rejectUnauthorized: process.env.NODE_ENV === 'production'
       },
-      // Increase timeouts for slow connections
-      connectionTimeout: 60000, // 60 seconds
-      greetingTimeout: 30000, // 30 seconds
-      socketTimeout: 60000, // 60 seconds
+      // Increase timeouts for cloud hosting
+      connectionTimeout: 120000, // 120 seconds
+      greetingTimeout: 60000, // 60 seconds
+      socketTimeout: 120000, // 120 seconds
     });
 
     // Verify connection in development
