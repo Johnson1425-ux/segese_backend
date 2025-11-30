@@ -60,6 +60,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Trust proxy - MUST be before rate limiting
+// This is required when behind reverse proxies (Render, Heroku, nginx, etc.)
+app.set('trust proxy', 1);
+
 // Connect to Database
 connectDB();
 
@@ -224,8 +228,8 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// UPDATED: Bind to 0.0.0.0 for remote access
-const server = app.listen(PORT, '0.0.0.0', () => {  // remove 0 port
+// Bind to 0.0.0.0 for remote access
+const server = app.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
   logger.info(`Server accessible at http://0.0.0.0:${PORT}`);
 });
