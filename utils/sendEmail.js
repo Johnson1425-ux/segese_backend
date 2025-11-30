@@ -40,7 +40,7 @@ const sendEmail = async (options) => {
       to: options.email,
       from: {
         email: process.env.FROM_EMAIL,
-        name: process.env.FROM_NAME || 'Hospital Management System'
+        name: process.env.FROM_NAME || 'Segese Medical Clinic'
       },
       subject: options.subject,
       text: options.message || '',
