@@ -3,6 +3,7 @@ import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
 import { protect, authorize } from '../middleware/auth.js';
 import sendEmail from '../utils/sendEmail.js';
+import { getEmailTemplate } from '../utils/emailTemplates.js';  // ← ADD THIS IMPORT
 import logger from '../utils/logger.js';
 
 const router = express.Router();
@@ -76,9 +77,10 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email } = req.body;
+    const { email, firstName, lastName, role } = req.body;
 
     try {
+      // Check if user already exists
       let user = await User.findOne({ email });
 
       if (user) {
@@ -88,22 +90,47 @@ router.post(
         });
       }
 
+      // Create new user
+      console.log('📝 Creating new user:', email);
       user = new User(req.body);
       await user.save();
+      console.log('✅ User created successfully:', user._id);
 
-      // Generate verification token and send verification email
+      // Generate verification token and save
+      console.log('🔑 Generating verification token...');
       const verificationToken = user.getVerificationToken();
       await user.save({ validateBeforeSave: false });
+      console.log('✅ Verification token saved');
 
-      const verifyURL = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
-      const message = `Please verify your email by clicking the following link: \n\n ${verifyURL}`;
+      // Create verification URL
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+      console.log('🔗 Verification URL:', verificationUrl);
 
+      // Send verification email with HTML template
       try {
-        await sendEmail({
-          email: user.email,
-          subject: 'Email Verification',
-          message,
+        console.log('📧 Attempting to send verification email to:', user.email);
+        
+        const emailHtml = getEmailTemplate('emailVerification', {
+          userName: `${firstName} ${lastName}`,
+          userRole: role,
+          verificationUrl: verificationUrl,
+          hospitalName: 'Hospital Management System'
         });
+
+        if (!emailHtml) {
+          throw new Error('Email template not found');
+        }
+
+        console.log('📄 Email template generated successfully');
+
+        const emailResult = await sendEmail({
+          email: user.email,
+          subject: 'Verify Your Email Address - Hospital Management System',
+          html: emailHtml,
+          message: `Please verify your email by clicking the following link: ${verificationUrl}` // Fallback plain text
+        });
+
+        console.log('✅ Verification email sent successfully:', emailResult.messageId);
 
         // Don't send the password back
         const userResponse = { ...user._doc };
@@ -115,7 +142,13 @@ router.post(
           data: userResponse
         });
       } catch (emailError) {
-        logger.error('Verification email error:', emailError);
+        console.error('❌ Verification email error:', emailError);
+        logger.error('Verification email error:', {
+          error: emailError.message,
+          code: emailError.code,
+          email: user.email
+        });
+        
         // If email fails, clear the token but still return success for user creation
         user.verificationToken = undefined;
         await user.save({ validateBeforeSave: false });
@@ -126,15 +159,18 @@ router.post(
 
         res.status(201).json({
           status: 'success',
-          message: 'User created successfully, but verification email could not be sent',
-          data: userResponse
+          message: 'User created successfully, but verification email could not be sent. Please contact support.',
+          data: userResponse,
+          emailError: emailError.message // Include error for debugging
         });
       }
     } catch (error) {
+      console.error('❌ Create user error:', error);
       logger.error('Create user error:', error);
       res.status(500).json({
         status: 'error',
-        message: 'Server error'
+        message: 'Server error',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
   }
@@ -193,7 +229,7 @@ router.put('/preferences', protect, async (req, res) => {
 // @desc    Update user details (by Admin)
 // @route   PUT /api/users/:id
 // @access  Private (Admin only)
-router.put('/:id', async (req, res) => {
+router.put('/:id', protect, authorize('admin'), async (req, res) => {
   try {
     const { firstName, lastName, email, role, isActive } = req.body;
     
@@ -218,7 +254,7 @@ router.put('/:id', async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: user });
-} catch (error) {
+  } catch (error) {
     logger.error('Admin update user error:', error);
     res.status(400).json({ success: false, message: error.message });
   }
@@ -281,7 +317,7 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
       });
     }
 
-    await user.deleteOne(); // Updated method name
+    await user.deleteOne();
 
     res.status(200).json({
       status: 'success',
