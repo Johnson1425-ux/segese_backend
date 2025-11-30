@@ -15,7 +15,7 @@ router.use(protect);
 router.get('/', authorize('admin', 'mortuary_attendant'), async (req, res) => {
   try {
     const releases = await Release.find()
-      .populate('corpseId', 'firstName lastName dateOfDeath')
+      .populate('corpseId', 'firstName lastName dateOfDeath cabinetNumber')
       .populate('authorizedBy', 'firstName lastName')
       .populate('approvedBy', 'firstName lastName')
       .sort({ createdAt: -1 });
@@ -39,7 +39,7 @@ router.get('/', authorize('admin', 'mortuary_attendant'), async (req, res) => {
 router.get('/pending', authorize('admin', 'mortuary_attendant'), async (req, res) => {
   try {
     const pendingReleases = await Release.find({ status: 'Pending' })
-      .populate('corpseId', 'firstName lastName dateOfDeath')
+      .populate('corpseId', 'firstName lastName dateOfDeath cabinetNumber')
       .populate('authorizedBy', 'firstName lastName')
       .sort({ createdAt: -1 });
     
@@ -98,7 +98,7 @@ router.post('/', authorize('admin', 'mortuary_attendant'), async (req, res) => {
     });
     
     await release.populate([
-      { path: 'corpseId', select: 'firstName lastName dateOfDeath' },
+      { path: 'corpseId', select: 'firstName lastName dateOfDeath cabinetNumber' },
       { path: 'authorizedBy', select: 'firstName lastName' }
     ]);
     
@@ -155,7 +155,7 @@ router.put('/:id', authorize('admin', 'mortuary_attendant'), async (req, res) =>
       req.body,
       { new: true, runValidators: true }
     ).populate([
-      { path: 'corpseId', select: 'firstName lastName dateOfDeath' },
+      { path: 'corpseId', select: 'firstName lastName dateOfDeath cabinetNumber' },
       { path: 'authorizedBy', select: 'firstName lastName' },
       { path: 'approvedBy', select: 'firstName lastName' }
     ]);
@@ -165,19 +165,6 @@ router.put('/:id', authorize('admin', 'mortuary_attendant'), async (req, res) =>
         status: 'error', 
         message: 'Release not found' 
       });
-    }
-
-    const corpse = await Corpse.findById(release.corpseId);
-    if (corpse && corpse.cabinetNumber) {
-      const cabinet = await Cabinet.findOne({ number: corpse.cabinetNumber });
-
-      if (cabinet) {
-        cabinet.isOccupied = false;
-        cabinet.occupiedBy = null;
-        await cabinet.save();
-      } else {
-        logger.warn(`Cabinet ${corpse.cabinetNumber} not found for release.`);
-      }
     }
     
     res.status(200).json({ 
@@ -220,7 +207,7 @@ router.post('/:id/approve', authorize('admin'), async (req, res) => {
     await release.save();
     
     await release.populate([
-      { path: 'corpseId', select: 'firstName lastName dateOfDeath' },
+      { path: 'corpseId', select: 'firstName lastName dateOfDeath cabinetNumber' },
       { path: 'authorizedBy', select: 'firstName lastName' },
       { path: 'approvedBy', select: 'firstName lastName' }
     ]);
@@ -262,6 +249,7 @@ router.post('/:id/complete', authorize('admin', 'mortuary_attendant'), async (re
     
     // Update release status
     release.status = 'Released';
+    release.completedDate = new Date();
     await release.save();
     
     // Update corpse status
@@ -283,7 +271,7 @@ router.post('/:id/complete', authorize('admin', 'mortuary_attendant'), async (re
     }
     
     await release.populate([
-      { path: 'corpseId', select: 'firstName lastName dateOfDeath' },
+      { path: 'corpseId', select: 'firstName lastName dateOfDeath cabinetNumber' },
       { path: 'authorizedBy', select: 'firstName lastName' },
       { path: 'approvedBy', select: 'firstName lastName' }
     ]);
@@ -326,11 +314,12 @@ router.post('/:id/cancel', authorize('admin'), async (req, res) => {
     }
     
     release.status = 'Cancelled';
-    release.releaseNotes = reason || 'Release cancelled';
+    release.cancellationReason = reason || 'No reason provided';
+    release.cancelledDate = new Date();
     await release.save();
     
     await release.populate([
-      { path: 'corpseId', select: 'firstName lastName dateOfDeath' },
+      { path: 'corpseId', select: 'firstName lastName dateOfDeath cabinetNumber' },
       { path: 'authorizedBy', select: 'firstName lastName' },
       { path: 'approvedBy', select: 'firstName lastName' }
     ]);
