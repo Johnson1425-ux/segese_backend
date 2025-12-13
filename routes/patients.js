@@ -1,10 +1,42 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 import Patient from '../models/Patient.js';
+import InsuranceProvider from '../models/InsuranceProvider.js';
 import { protect, authorize } from '../middleware/auth.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
+
+// Helper function to validate and convert insurance provider
+const validateInsuranceProvider = async (insuranceData) => {
+  if (!insuranceData || !insuranceData.provider) {
+    return insuranceData;
+  }
+
+  let providerId = insuranceData.provider;
+
+  // If it's a string name, convert to ObjectId
+  if (typeof providerId === 'string' && !mongoose.Types.ObjectId.isValid(providerId)) {
+    const provider = await InsuranceProvider.findOne({
+      name: { $regex: new RegExp(`^${providerId}$`, 'i') },
+      isActive: true
+    });
+
+    if (!provider) {
+      const availableProviders = await InsuranceProvider.find({ isActive: true })
+        .select('name');
+      throw new Error(
+        `Insurance provider "${providerId}" not found. ` +
+        `Available: ${availableProviders.map(p => p.name).join(', ')}`
+      );
+    }
+
+    insuranceData.provider = provider._id;
+  }
+
+  return insuranceData;
+};
 
 // Helper function to clean insurance data
 const cleanInsuranceData = (data) => {
@@ -19,9 +51,9 @@ const cleanInsuranceData = (data) => {
   return data;
 };
 
-// @desc    Search patients (Updated to support 'q' query parameter)
+// @desc    Search patients
 // @route   GET /api/patients/search
-// @access  Private (Admin, Doctor, Nurse, Receptionist, Pharmacist)
+// @access  Private
 router.get('/search', protect, authorize('admin', 'doctor', 'receptionist', 'pharmacist', 'nurse'), async (req, res) => {
   try {
     const { q, name } = req.query;
@@ -43,7 +75,9 @@ router.get('/search', protect, authorize('admin', 'doctor', 'receptionist', 'pha
         { phone: { $regex: searchQuery, $options: 'i' } },
         { patientId: { $regex: searchQuery, $options: 'i' } }
       ]
-    }).limit(10);
+    })
+    .populate('insurance.provider', 'name code')
+    .limit(10);
 
     res.status(200).json({
       status: 'success',
@@ -62,7 +96,7 @@ router.get('/search', protect, authorize('admin', 'doctor', 'receptionist', 'pha
 
 // @desc    Get all patients
 // @route   GET /api/patients
-// @access  Private (Admin, Doctor, Nurse)
+// @access  Private
 router.get('/', protect, authorize('admin', 'doctor', 'receptionist', 'pharmacist'), async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -72,6 +106,7 @@ router.get('/', protect, authorize('admin', 'doctor', 'receptionist', 'pharmacis
     const total = await Patient.countDocuments();
 
     const patients = await Patient.find()
+      .populate('insurance.provider', 'name code')
       .skip(startIndex)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -109,10 +144,11 @@ router.get('/', protect, authorize('admin', 'doctor', 'receptionist', 'pharmacis
 
 // @desc    Get single patient
 // @route   GET /api/patients/:id
-// @access  Private (Admin, Doctor, Nurse)
+// @access  Private
 router.get('/:id', protect, authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
   try {
-    const patient = await Patient.findById(req.params.id);
+    const patient = await Patient.findById(req.params.id)
+      .populate('insurance.provider', 'name code type');
 
     if (!patient) {
       return res.status(404).json({
@@ -136,7 +172,7 @@ router.get('/:id', protect, authorize('admin', 'doctor', 'receptionist'), async 
 
 // @desc    Create new patient
 // @route   POST /api/patients
-// @access  Private (Admin, Doctor, Nurse, Receptionist)
+// @access  Private
 router.post('/', protect, authorize('admin', 'receptionist'), [
   body('firstName').trim().isLength({ min: 2, max: 50 }).withMessage('First name must be between 2 and 50 characters'),
   body('middleName').trim().isLength({ min:2, max: 50 }).withMessage('Middle name must be between 2 and 50 characters'),
@@ -147,7 +183,6 @@ router.post('/', protect, authorize('admin', 'receptionist'), [
   body('gender').isIn(['Male', 'Female', 'Other']).withMessage('Invalid gender'),
   body('bloodType').optional().isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).withMessage('Invalid blood type'),
   body('maritalStatus').optional().isIn(['Single', 'Married', 'Divorced', 'Widowed', 'Other']).withMessage('Invalid marital status'),
-  body('address.country').optional().isIn(['Tanzania, United Republic of']).withMessage('Please provide a valid country'),
   body('address.region').optional().trim().isLength({ min: 2, max: 100 }),
   body('address.district').optional().trim().isLength({ min: 2, max: 100 }),
   body('address.ward').optional().trim().isLength({ min: 2, max: 100 }),
@@ -169,7 +204,12 @@ router.post('/', protect, authorize('admin', 'receptionist'), [
     // Clean insurance data
     let patientData = cleanInsuranceData(req.body);
 
-    // Check if patient already exists with same email or phone
+    // Validate and convert insurance provider to ObjectId
+    if (patientData.insurance?.provider) {
+      patientData.insurance = await validateInsuranceProvider(patientData.insurance);
+    }
+
+    // Check if patient already exists
     const existingPatient = await Patient.findOne({
       $or: [
         { email: patientData.email },
@@ -185,6 +225,9 @@ router.post('/', protect, authorize('admin', 'receptionist'), [
     }
 
     const patient = await Patient.create(patientData);
+    
+    // Populate insurance provider before sending response
+    await patient.populate('insurance.provider', 'name code');
 
     res.status(201).json({
       status: 'success',
@@ -195,14 +238,14 @@ router.post('/', protect, authorize('admin', 'receptionist'), [
     logger.error('Create patient error:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Server error'
+      message: error.message || 'Server error'
     });
   }
 });
 
 // @desc    Update patient
 // @route   PUT /api/patients/:id
-// @access  Private (Admin, Receptionist)
+// @access  Private
 router.put('/:id', protect, authorize('admin', 'receptionist'), [
   body('firstName').optional().trim().isLength({ min: 2, max: 50 }).withMessage('First name must be between 2 and 50 characters'),
   body('middleName').optional().trim().isLength({ min: 2, max: 50 }).withMessage('Middle name must be between 2 and 50 characters'),
@@ -213,7 +256,6 @@ router.put('/:id', protect, authorize('admin', 'receptionist'), [
   body('gender').optional().isIn(['Male', 'Female', 'Other']).withMessage('Invalid gender'),
   body('bloodType').optional().isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).withMessage('Invalid blood type'),
   body('maritalStatus').optional().isIn(['Single', 'Married', 'Divorced', 'Widowed', 'Other']).withMessage('Invalid marital status'),
-  body('address.country').optional().isIn(['Tanzania, United Republic of']).withMessage('Please provide a valid country'),
   body('address.region').optional().trim().isLength({ min: 2, max: 100 }),
   body('address.district').optional().trim().isLength({ min: 2, max: 100 }),
   body('address.ward').optional().trim().isLength({ min: 2, max: 100 }),
@@ -242,14 +284,13 @@ router.put('/:id', protect, authorize('admin', 'receptionist'), [
     }
 
     // Check if email or phone is being changed and if it's already taken
-    if ((req.body.email && req.body.email !== patient.email) || 
-        (req.body.phone && req.body.phone !== patient.phone)) {
+    if ((req.body.email && req.body.email !== patient.email) || (req.body.phone && req.body.phone !== patient.phone)){
       const existingPatient = await Patient.findOne({
-        $or: [
-          { email: req.body.email },
-          { phone: req.body.phone }
-        ],
-        _id: { $ne: req.params.id }
+      $or: [
+      { email: req.body.email },
+      { phone: req.body.phone }
+      ],
+      _id: { $ne: req.params.id }
       });
 
       if (existingPatient) {
@@ -260,13 +301,18 @@ router.put('/:id', protect, authorize('admin', 'receptionist'), [
       }
     }
 
-    // Clean insurance data before updating
+    // Clean insurance data
     const updateData = cleanInsuranceData(req.body);
+
+    // Validate and convert insurance provider to ObjectId
+    if (updateData.insurance?.provider) {
+      updateData.insurance = await validateInsuranceProvider(updateData.insurance);
+    }
 
     patient = await Patient.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true
-    });
+    }).populate('insurance.provider', 'name code');
 
     res.status(200).json({
       status: 'success',
@@ -276,7 +322,7 @@ router.put('/:id', protect, authorize('admin', 'receptionist'), [
     logger.error('Update patient error:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Server error'
+      message: error.message || 'Server error'
     });
   }
 });
@@ -287,7 +333,6 @@ router.put('/:id', protect, authorize('admin', 'receptionist'), [
 router.delete('/:id', protect, authorize('admin'), async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
-
     if (!patient) {
       return res.status(404).json({
         status: 'error',
@@ -303,6 +348,28 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
     });
   } catch (error) {
     logger.error('Delete patient error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
+  }
+});
+
+// @desc    Get available insurance providers
+// @route   GET /api/patients/insurance-providers/list
+// @access  Private
+router.get('/insurance-providers/list', protect, async (req, res) => {
+  try {
+    const providers = await InsuranceProvider.find({ isActive: true })
+    .select('_id name code type')
+    .sort('name');
+
+    res.status(200).json({
+      status: 'success',
+      data: providers
+    });
+  } catch (error) {
+    logger.error('Get insurance providers error:', error);
     res.status(500).json({
       status: 'error',
       message: 'Server error'

@@ -1,22 +1,22 @@
 import express from 'express';
-import { body, validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 import Visit from '../models/Visit.js';
 import Patient from '../models/Patient.js';
-import LabTest from '../models/LabTest.js';
+import Service from '../models/Service.js';
+import Invoice from '../models/Invoice.js';
 import { protect, authorize } from '../middleware/auth.js';
+import { checkPaymentEligibility } from '../middleware/paymentEligibility.js';
+import billingService from '../services/billingService.js';
 import logger from '../utils/logger.js';
 
 const router = express.Router();
-
-// Protect all routes in this file
 router.use(protect);
 
-// @desc    Get all active visits (or doctor's own queue) and allow search by patient name
+// @desc    Get all active visits
 // @route   GET /api/visits
 router.get('/', authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
     try {
         const { search } = req.query;
-        
         const query = { isActive: true };
 
         if (req.user.role === 'doctor') {
@@ -24,11 +24,8 @@ router.get('/', authorize('admin', 'doctor', 'receptionist'), async (req, res) =
         }
 
         let visits;
-
         if (search) {
-            const Patient = mongoose.model('Patient');
             const patientSearchRegex = new RegExp(search, 'i');
-
             const matchingPatients = await Patient.find({
                 $or: [
                     { firstName: { $regex: patientSearchRegex } },
@@ -36,9 +33,7 @@ router.get('/', authorize('admin', 'doctor', 'receptionist'), async (req, res) =
                 ]
             }).select('_id');
 
-            const patientIds = matchingPatients.map(p => p._id);
-
-            query.patient = { $in: patientIds };
+            query.patient = { $in: matchingPatients.map(p => p._id) };
         }
 
         visits = await Visit.find(query)
@@ -55,14 +50,17 @@ router.get('/', authorize('admin', 'doctor', 'receptionist'), async (req, res) =
 
 // @desc    Get a single visit by ID
 // @route   GET /api/visits/:id
-router.get('/:id', authorize('admin', 'doctor'), async (req, res) => {
+router.get('/:id', authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
     try {
         const visit = await Visit.findById(req.params.id)
             .populate('patient')
-            .populate('doctor');
+            .populate('doctor')
+            .populate('invoice');
+        
         if (!visit) {
             return res.status(404).json({ status: 'error', message: 'Visit not found' });
         }
+        
         res.status(200).json({ status: 'success', data: visit });
     } catch (error) {
         logger.error('Get single visit error:', error);
@@ -70,26 +68,26 @@ router.get('/:id', authorize('admin', 'doctor'), async (req, res) => {
     }
 });
 
-// @desc    Create a new visit
+// @desc    Create a new visit with invoice (CENTRALIZED)
 // @route   POST /api/visits
 // @access  Private (Admin, Receptionist)
 router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
   try {
-    const { patientId, doctorId, visitDate, reason, status, type } = req.body;
-
+    const { patientId, doctorId, visitDate, reason, type } = req.body;
+    
+    // Check for active visit
     const activeVisit = await Visit.findOne({ 
-        patient: patientId, 
-        isActive: true
+      patient: patientId, 
+      isActive: true
     });
-
     if (activeVisit) {
       return res.status(400).json({
         status: 'error',
-        message: `Patient already has an active visit (Visit ID: ${activeVisit.visitId || activeVisit._id}). Please end the current visit before starting a new one.`
+        message: 'Patient already has an active visit'
       });
     }
 
-    // Fetch patient to check insurance status
+    // Fetch patient
     const patient = await Patient.findById(patientId);
     if (!patient) {
       return res.status(404).json({
@@ -98,15 +96,10 @@ router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
       });
     }
 
-    // Check if patient has insurance
     const hasInsurance = !!(patient.insurance?.provider);
-
-    // Determine initial status based on insurance
-    let visitStatus = status || 'Pending Payment';
-    if (hasInsurance) {
-      visitStatus = 'In Queue';
-    }
+    const visitStatus = hasInsurance ? 'In Queue' : 'Pending Payment';
     
+    // Create visit
     const newVisit = new Visit({
       patient: patientId,
       doctor: doctorId,
@@ -116,15 +109,48 @@ router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
       type,
       startedBy: req.user.id,
     });
-
     const visit = await newVisit.save();
 
-    logger.info(`Visit created for patient ${patientId}. Insurance status: ${hasInsurance}, Visit status: ${visitStatus}`);
+    // === USE CENTRALIZED BILLING SERVICE ===
+    // Look up consultation service
+    const consultationService = await Service.findOne({ 
+      $or: [
+        { category: 'Consultation' },
+        { name: { $regex: /consultation/i } }
+      ]
+    });
+
+    if (consultationService) {
+      // Create invoice via billingService (CENTRALIZED)
+      // This will check for duplicates automatically
+      const invoice = await billingService.createInvoice({
+        patient: patientId,
+        visit: visit._id,
+        items: [{
+          type: 'consultation',
+          description: consultationService.name,
+          quantity: 1,
+          unitPrice: consultationService.price,
+          total: consultationService.price
+        }],
+        paymentTerms: 'immediate'
+      }, req.user.id);
+
+      // Link invoice to visit (billingService does this too, but be explicit)
+      visit.invoice = invoice._id;
+      visit.consultationFeeAmount = consultationService.price;
+      visit.consultationFeePaid = hasInsurance;
+      await visit.save();
+
+      logger.info(`Visit ${visit.visitId} created with invoice ${invoice.invoiceNumber}`);
+    }
 
     res.status(201).json({
       status: 'success',
       data: visit,
-      message: `Visit created successfully${hasInsurance ? ' and moved to In Queue (insurance coverage)' : ''}`
+      message: hasInsurance ? 
+        'Visit created. Consultation fee covered by insurance.' :
+        'Visit created. Payment required before services can be ordered.'
     });
   } catch (error) {
     logger.error('Create visit error:', error);
@@ -132,46 +158,348 @@ router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
   }
 });
 
-// @desc    Add a lab order to a visit
+// @desc    Add lab order to invoice (CENTRALIZED)
 // @route   POST /api/visits/:id/lab-orders
-// @access  Private (Doctor only)
-router.post('/:id/lab-orders', authorize('admin', 'doctor'), async (req, res) => {
+router.post('/:id/lab-orders', 
+  authorize('admin', 'doctor'), 
+  checkPaymentEligibility,
+  async (req, res) => {
     try {
-        const visit = await Visit.findById(req.params.id);
+      const visit = req.visit;
+      const hasInsurance = req.hasInsurance;
+      const { testName, notes } = req.body;
 
-        if (!visit) {
-            return res.status(404).json({ status: 'error', message: 'Visit not found' });
+      // Look up service
+      const service = await Service.findOne({ 
+        name: testName,
+        category: 'Lab Test'
+      });
+
+      // Determine initial status based on insurance
+      const initialStatus = hasInsurance ? 'Pending' : 'Pending Payment';
+
+      // Add to visit (clinical tracking)
+      const newLabOrder = {
+        testName,
+        notes,
+        patient: visit.patient._id,
+        orderedBy: req.user.id,
+        status: initialStatus
+      };
+      visit.labOrders.push(newLabOrder);
+      await visit.save();
+
+      // === USE CENTRALIZED BILLING SERVICE ===
+      // Add to invoice via billingService
+      if (visit.invoice && service) {
+        await billingService.addItemsToInvoice(
+          visit.invoice,
+          [{
+            type: 'lab_test',
+            description: testName,
+            quantity: 1,
+            unitPrice: service.price,
+            total: service.price,
+            notes
+          }],
+          hasInsurance
+        );
+
+        logger.info(`Lab test added to invoice for visit ${visit.visitId}`);
+      }
+
+      res.status(201).json({ 
+        status: 'success', 
+        data: newLabOrder,
+        message: hasInsurance ? 
+          'Lab test ordered and ready for processing.' :
+          'Lab test ordered. Payment required before test can be performed.',
+        priceInfo: service ? {
+          service: testName,
+          price: service.price,
+          coveredByInsurance: hasInsurance
+        } : null
+      });
+    } catch (error) {
+      logger.error('Add lab order error:', error);
+      res.status(400).json({ status: 'error', message: error.message });
+    }
+});
+
+// @desc    Add radiology order to invoice (CENTRALIZED)
+// @route   POST /api/visits/:id/radiology-orders
+router.post('/:id/radiology-orders', 
+  authorize('admin', 'doctor'), 
+  checkPaymentEligibility,
+  async (req, res) => {
+    try {
+      const visit = req.visit;
+      const hasInsurance = req.hasInsurance;
+      const { orderData } = req.body;
+      const { scanType, bodyPart, reason } = orderData;
+
+      // Look up service
+      const service = await Service.findOne({ 
+        name: scanType,
+        category: 'Imaging'
+      });
+
+      // Determine initial status based on insurance
+      const initialStatus = hasInsurance ? 'Pending' : 'Pending Payment';
+
+      // Add to visit (clinical tracking)
+      const newRadiologyOrder = {
+        scanType,
+        bodyPart,
+        reason,
+        patient: visit.patient._id,
+        orderedBy: req.user.id,
+        status: initialStatus
+      };
+      
+      if (!visit.radiologyOrders) {
+        visit.radiologyOrders = [];
+      }
+      
+      visit.radiologyOrders.push(newRadiologyOrder);
+      await visit.save();
+
+      // === USE CENTRALIZED BILLING SERVICE ===
+      // Add to invoice via billingService
+      if (visit.invoice && service) {
+        await billingService.addItemsToInvoice(
+          visit.invoice,
+          [{
+            type: 'imaging',
+            description: `${scanType} - ${bodyPart}`,
+            quantity: 1,
+            unitPrice: service.price,
+            total: service.price,
+            notes: reason
+          }],
+          hasInsurance
+        );
+
+        logger.info(`Radiology order added to invoice for visit ${visit.visitId}`);
+      }
+
+      res.status(201).json({ 
+        status: 'success', 
+        data: newRadiologyOrder,
+        message: hasInsurance ? 
+          'Radiology order created and ready for processing.' :
+          'Radiology order created. Payment required before scan can be performed.',
+        priceInfo: service ? {
+          service: scanType,
+          price: service.price,
+          coveredByInsurance: hasInsurance
+        } : null
+      });
+    } catch (error) {
+      logger.error('Add radiology order error:', error);
+      res.status(400).json({ status: 'error', message: error.message });
+    }
+});
+
+// @desc    Add prescription to invoice (Medicine + ItemPrice based on Insurance)
+// @route   POST /api/visits/:id/prescriptions
+router.post('/:id/prescriptions', 
+  authorize('admin', 'doctor'),
+  checkPaymentEligibility,
+  async (req, res) => {
+    try {
+      const visit = req.visit;
+      const hasInsurance = req.hasInsurance;
+      const { medication, dosage, frequency, duration } = req.body;
+
+      // Step 1: Check if medication exists in Medicine model
+      const Medicine = mongoose.model('Medicine');
+      const medicationName = medication.split(' ')[0]; // Extract base name (e.g., "Amoxicillin 500mg" -> "Amoxicillin")
+      
+      const medicineItem = await Medicine.findOne({ 
+        $or: [
+          { name: { $regex: new RegExp(`^${medication}$`, 'i') } },
+          { name: { $regex: new RegExp(`^${medicationName}`, 'i') } }
+        ]
+      });
+
+      if (!medicineItem) {
+        return res.status(404).json({
+          status: 'error',
+          message: `Medication "${medication}" not found in inventory`
+        });
+      }
+
+      // Step 2: Get patient's insurance provider
+      const patient = await Patient.findById(visit.patient._id)
+        .populate('insurance.provider', 'name');
+      
+      const insuranceProviderName = patient?.insurance?.provider?.name;
+
+      // Step 3: Fetch price from ItemPrice model based on insurance
+      const ItemPrice = mongoose.model('ItemPrice');
+      const itemPrice = await ItemPrice.findOne({ 
+        name: { $regex: new RegExp(`^${medicineItem.name}$`, 'i') } 
+      });
+
+      let price = 0;
+      let priceSource = 'Not Found';
+
+      if (itemPrice) {
+        if (hasInsurance && insuranceProviderName && itemPrice.prices[insuranceProviderName]) {
+          // Use insurance-specific price (e.g., NHIF, NSSF, BRITAM, ASSEMBLE)
+          price = itemPrice.prices[insuranceProviderName];
+          priceSource = insuranceProviderName;
+        } else if (itemPrice.prices.Pharmacy) {
+          // Use Pharmacy price for cash patients or if insurance price not available
+          price = itemPrice.prices.Pharmacy;
+          priceSource = 'Pharmacy (Cash)';
+        } else {
+          // Fallback to Medicine model selling price
+          price = medicineItem.sellingPrice || 0;
+          priceSource = 'Medicine Model';
         }
+      } else {
+        // ItemPrice not found, use Medicine model selling price
+        price = medicineItem.sellingPrice || 0;
+        priceSource = 'Medicine Model (No ItemPrice)';
+      }
 
-        const { testName, notes } = req.body;
+      if (price <= 0) {
+        return res.status(400).json({
+          status: 'error',
+          message: `No price configured for medication "${medication}" with insurance provider "${insuranceProviderName || 'Cash'}"`
+        });
+      }
 
-        const newLabOrder = {
-            testName,
-            notes,
-            patient: visit.patient._id,
-            orderedBy: req.user.id,
-            status: 'Pending',
-        };
+      // Determine initial status based on insurance
+      const initialStatus = hasInsurance ? 'Pending' : 'Pending Payment';
 
-        visit.labOrders.push(newLabOrder);
+      // Step 4: Add to visit (clinical tracking)
+      const newPrescription = {
+        medication: medicineItem.name,
+        dosage,
+        frequency,
+        duration,
+        patient: visit.patient._id,
+        prescribedBy: req.user.id,
+        status: initialStatus
+      };
+      visit.prescriptions.push(newPrescription);
+      await visit.save();
+
+      // Step 5: Add to invoice via billingService
+      if (visit.invoice) {
+        await billingService.addItemsToInvoice(
+          visit.invoice,
+          [{
+            type: 'medication',
+            description: `${medicineItem.name} - ${dosage}, ${frequency}`,
+            quantity: 1,
+            unitPrice: price,
+            total: price,
+            notes: duration,
+            insuranceProvider: insuranceProviderName || 'Cash'
+          }],
+          hasInsurance
+        );
+
+        logger.info(
+          `Medication "${medicineItem.name}" added to invoice for visit ${visit.visitId}. ` +
+          `Price: ${price} (Source: ${priceSource})`
+        );
+      }
+
+      res.status(201).json({ 
+        status: 'success', 
+        data: newPrescription,
+        message: hasInsurance ? 
+          'Prescription added and ready for dispensing.' :
+          'Prescription added. Payment required before medication can be dispensed.',
+        priceInfo: {
+          medication: medicineItem.name,
+          price: price,
+          priceSource: priceSource,
+          coveredByInsurance: hasInsurance,
+          insuranceProvider: insuranceProviderName || 'Cash'
+        }
+      });
+    } catch (error) {
+      logger.error('Add prescription error:', error);
+      res.status(400).json({ 
+        status: 'error', 
+        message: error.message 
+      });
+    }
+});
+
+// @desc    Update payment status (consultation fee paid)
+// @route   PATCH /api/visits/:id/payment-status
+router.patch('/:id/payment-status', 
+  authorize('admin', 'receptionist'), 
+  async (req, res) => {
+    try {
+      const visit = await Visit.findById(req.params.id)
+        .populate('patient')
+        .populate('invoice');
+
+      if (!visit) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Visit not found'
+        });
+      }
+
+      if (!visit.invoice) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'No invoice found for this visit'
+        });
+      }
+
+      const invoice = await Invoice.findById(visit.invoice);
+      
+      if (!invoice) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Invoice not found'
+        });
+      }
+
+      // Check if consultation item is paid
+      const consultationItem = invoice.items.find(item => item.type === 'consultation');
+      
+      if (consultationItem && consultationItem.paid) {
+        // Consultation fee is paid, move to queue
+        visit.status = 'In Queue';
+        visit.consultationFeePaid = true;
         await visit.save();
 
-        const addedOrder = visit.labOrders[visit.labOrders.length - 1];
-        res.status(201).json({ status: 'success', data: addedOrder });
+        return res.status(200).json({
+          status: 'success',
+          message: 'Payment confirmed. Visit moved to queue.',
+          data: visit
+        });
+      }
 
+      res.status(400).json({
+        status: 'error',
+        message: 'Consultation fee has not been paid yet'
+      });
     } catch (error) {
-        logger.error('Add lab order error:', error);
-        res.status(400).json({ status: 'error', message: error.message });
+      logger.error('Update payment status error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server Error'
+      });
     }
 });
 
 // @desc    Add a diagnosis to a visit
 // @route   POST /api/visits/:id/diagnosis
-// @access  Private (Doctor only)
 router.post('/:id/diagnosis', authorize('admin', 'doctor'), async (req, res) => {
     try {
         const visit = await Visit.findById(req.params.id);
-
         if (!visit) {
             return res.status(404).json({ status: 'error', message: 'Visit not found' });
         }
@@ -189,98 +517,10 @@ router.post('/:id/diagnosis', authorize('admin', 'doctor'), async (req, res) => 
         visit.diagnosis.push(newDiagnosis);
         await visit.save();
 
-        const addedDiagnosis = visit.diagnosis[visit.diagnosis.length - 1];
-        res.status(201).json({ status: 'success', data: addedDiagnosis });
-
+        res.status(201).json({ status: 'success', data: newDiagnosis });
     } catch (error) {
         logger.error('Add diagnosis error:', error);
         res.status(400).json({ status: 'error', message: error.message });
-    }
-});
-
-// @desc    Add a prescription to a visit
-// @route   POST /api/visits/:id/prescriptions
-// @access  Private (Doctor only)
-router.post('/:id/prescriptions', authorize('admin', 'doctor'), async (req, res) => {
-    try {
-        const visit = await Visit.findById(req.params.id);
-
-        if (!visit) {
-            return res.status(404).json({ status: 'error', message: 'Visit not found' });
-        }
-
-        const { medication, dosage, frequency, duration } = req.body;
-
-        const newPrescription = {
-            medication,
-            dosage,
-            frequency,
-            duration,
-            patient: visit.patient._id,
-            prescribedBy: req.user.id,
-        };
-
-        visit.prescriptions.push(newPrescription);
-        await visit.save();
-
-        const addedPrescription = visit.prescriptions[visit.prescriptions.length - 1];
-        res.status(201).json({ status: 'success', data: addedPrescription });
-
-    } catch (error) {
-        logger.error('Add prescription error:', error);
-        res.status(400).json({ status: 'error', message: error.message });
-    }
-});
-
-// @desc    Update a visit with clinical data
-// @route   PUT /api/visits/:id/clinical
-router.put('/:id/clinical', authorize('doctor'), async (req, res) => {
-    try {
-        const visit = await Visit.findById(req.params.id);
-        if (!visit) {
-            return res.status(404).json({ message: 'Visit not found' });
-        }
-
-        const { diagnosis, labOrders, prescriptions } = req.body;
-
-        if (diagnosis) visit.diagnosis = diagnosis;
-        if (labOrders) visit.labOrders.push(...labOrders);
-        if (prescriptions) visit.prescriptions.push(...prescriptions);
-        
-        if(req.body.status) visit.status = req.body.status;
-
-        await visit.save();
-        res.status(200).json({ status: 'success', data: visit });
-
-    } catch (error) {
-        logger.error('Update clinical data error:', error);
-        res.status(400).json({ message: 'Failed to update clinical data', error: error.message });
-    }
-});
-
-// @desc    Get prescriptions for a visit
-// @route   GET /api/visits/:id/prescriptions
-router.get('/:id/prescriptions', async (req, res) => {
-    try {
-        const visit = await Visit.findById(req.params.id);
-        if (!visit) {
-            return res.status(404).json({ 
-                status: 'error',
-                message: 'Visit not found'
-            });
-        }
-
-        const prescription = visit.prescriptions;
-        res.status(200).json({
-            status: 'success',
-            data: prescription
-        });
-    } catch (error) {
-        logger.error('Get prescription error', error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Server Error' 
-        });
     }
 });
 
@@ -289,9 +529,8 @@ router.get('/:id/prescriptions', async (req, res) => {
 router.patch('/:id/end-visit', authorize('admin', 'receptionist'), async (req, res) => {
     try {
         const visit = await Visit.findById(req.params.id);
-
         if (!visit) {
-            res.status(404).json({
+            return res.status(404).json({
                 status: 'error',
                 message: 'Visit not found'
             });
@@ -302,7 +541,7 @@ router.patch('/:id/end-visit', authorize('admin', 'receptionist'), async (req, r
 
         res.status(200).json({
             status: 'success',
-            message: `Visit ${visit.isActive} ended successfully`
+            message: `Visit ended successfully`
         });
     } catch (error) {
         logger.error('Ending visit error', error);

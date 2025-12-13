@@ -5,6 +5,7 @@ import billingService from '../services/billingService.js';
 import Invoice from '../models/Invoice.js';
 import Payment from '../models/Payment.js';
 import Patient from '../models/Patient.js';
+import Visit from '../models/Visit.js';
 import InsuranceProvider from '../models/InsuranceProvider.js';
 import logger from '../utils/logger.js';
 
@@ -21,6 +22,59 @@ const handleValidation = (req, res, next) => {
     });
   }
   next();
+};
+
+// Helper function to update visit order statuses after payment
+const updateVisitOrderStatuses = async (visit, paidItemType) => {
+  let updated = false;
+
+  // If lab test was paid, update lab order status
+  if (paidItemType === 'lab_test' && visit.labOrders && visit.labOrders.length > 0) {
+    // Find the most recent pending lab order and mark it as ready
+    const pendingLabOrder = visit.labOrders
+      .filter(order => order.status === 'Pending Payment')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+    
+    if (pendingLabOrder) {
+      pendingLabOrder.status = 'Pending';
+      updated = true;
+      logger.info(`Lab order ${pendingLabOrder._id} status changed to Pending after payment`);
+    }
+  }
+
+  // If imaging/radiology was paid, update radiology order status
+  if (paidItemType === 'imaging' && visit.radiologyOrders && visit.radiologyOrders.length > 0) {
+    // Find the most recent pending radiology order and mark it as ready
+    const pendingRadiologyOrder = visit.radiologyOrders
+      .filter(order => order.status === 'Pending Payment')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+    
+    if (pendingRadiologyOrder) {
+      pendingRadiologyOrder.status = 'Pending';
+      updated = true;
+      logger.info(`Radiology order ${pendingRadiologyOrder._id} status changed to Pending after payment`);
+    }
+  }
+
+  // If medication was paid, update prescription status
+  if (paidItemType === 'medication' && visit.prescriptions && visit.prescriptions.length > 0) {
+    // Find the most recent pending prescription and mark it as ready
+    const pendingPrescription = visit.prescriptions
+      .filter(prescription => prescription.status === 'Pending Payment')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+    
+    if (pendingPrescription) {
+      pendingPrescription.status = 'Pending';
+      updated = true;
+      logger.info(`Prescription ${pendingPrescription._id} status changed to Pending after payment`);
+    }
+  }
+
+  if (updated) {
+    await visit.save();
+  }
+
+  return updated;
 };
 
 // @desc    Get all invoices with searching, filtering, and pagination
@@ -168,32 +222,10 @@ router.post('/invoices',
   handleValidation,
   async (req, res) => {
     try {
-      // Fetch the patient to check if they have insurance
+      const invoice = await billingService.createInvoice(req.body, req.user.id);
+
       const patient = await Patient.findById(req.body.patient);
-      
-      if (!patient) {
-        return res.status(404).json({
-          status: 'error',
-          message: 'Patient not found'
-        });
-      }
-
-      // Check if patient has insurance (has a provider)
-      const hasInsurance = !!(patient.insurance?.provider);
-
-      // Create the invoice
-      let invoice = await billingService.createInvoice(req.body, req.user.id);
-
-      // If patient has insurance, mark invoice as paid immediately
-      if (hasInsurance) {
-        invoice.status = 'paid';
-        invoice.amountPaid = invoice.totalAmount;
-        invoice.balanceDue = 0;
-        invoice.paidDate = new Date();
-        await invoice.save();
-
-        logger.info(`Invoice ${invoice.invoiceNumber} auto-marked as paid for insured patient ${patient._id}`);
-      }
+      const hasInsurance = !!(patient?.insurance?.provider);
 
       res.status(201).json({
         status: 'success',
@@ -442,7 +474,7 @@ router.get('/insurance-providers',
   async (req, res) => {
     try {
       const providers = await InsuranceProvider.find({ isActive: true })
-        .select('name code type coveragePlans');
+        .select('name code type');
 
       res.status(200).json({
         status: 'success',
@@ -582,6 +614,224 @@ router.get('/statistics',
       res.status(500).json({
         status: 'error',
         message: 'Server error'
+      });
+    }
+});
+
+// @desc    Mark a specific invoice item as paid
+// @route   PATCH /api/billing/invoices/:invoiceId/items/:itemIndex/pay
+// @access  Private (Admin, Receptionist)
+router.patch('/invoices/:invoiceId/items/:itemIndex/pay',
+  protect, 
+  authorize('admin', 'receptionist'), 
+  async (req, res) => {
+    try {
+      const { invoiceId, itemIndex } = req.params;
+      const { paymentMethod, amount } = req.body;
+
+      const invoice = await Invoice.findById(invoiceId)
+        .populate('visit')
+        .populate({ path: 'visit', populate: { path: 'patient' }});
+      
+      if (!invoice) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Invoice not found'
+        });
+      }
+
+      if (itemIndex >= invoice.items.length) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invalid item index'
+        });
+      }
+
+      // Mark item as paid
+      invoice.items[itemIndex].paid = true;
+      invoice.items[itemIndex].paidAt = new Date();
+      
+      // Record payment
+      const payment = {
+        amount: amount || invoice.items[itemIndex].total,
+        method: paymentMethod || 'cash',
+        paidBy: req.user.id,
+        paidAt: new Date(),
+        reference: `Payment for ${invoice.items[itemIndex].description}`
+      };
+      
+      if (!invoice.payments) invoice.payments = [];
+      invoice.payments.push(payment);
+      
+      // Recalculate totals
+      invoice.calculateTotals();
+      await invoice.save();
+
+      // Get the item type that was paid
+      const paidItemType = invoice.items[itemIndex].type;
+
+      // === CHECK IF CONSULTATION PAID FOR NON-INSURED PATIENT ===
+      if (invoice.visit && paidItemType === 'consultation') {
+        const visit = invoice.visit;
+        const hasInsurance = !!(visit.patient?.insurance?.provider);
+        
+        if (!hasInsurance && visit.status === 'Pending Payment') {
+          visit.status = 'In Queue';
+          visit.consultationFeePaid = true;
+          await visit.save();
+          logger.info(`Visit ${visit.visitId} moved to queue after consultation payment`);
+        }
+      }
+
+      // === CHECK IF LAB TEST OR RADIOLOGY PAID ===
+      if (invoice.visit && (paidItemType === 'lab_test' || paidItemType === 'imaging' || paidItemType === 'medication')) {
+        const visit = await Visit.findById(invoice.visit._id)
+          .populate('patient');
+        
+        if (visit) {
+          await updateVisitOrderStatuses(visit, paidItemType);
+        }
+      }
+
+      logger.info(`Invoice item paid: ${invoice.invoiceNumber} - Item ${itemIndex}`);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Payment recorded successfully',
+        data: invoice
+      });
+    } catch (error) {
+      logger.error('Record item payment error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server Error'
+      });
+    }
+});
+
+// @desc    Pay for multiple invoice items at once
+// @route   POST /api/billing/invoices/:invoiceId/pay-items
+// @access  Private (Admin, Receptionist)
+router.post('/invoices/:invoiceId/pay-items', 
+  protect, 
+  authorize('admin', 'receptionist'), 
+  async (req, res) => {
+    try {
+      const { invoiceId } = req.params;
+      const { itemIndices, method, amount } = req.body;
+
+      const invoice = await Invoice.findById(invoiceId)
+        .populate('visit')
+        .populate({ path: 'visit', populate: { path: 'patient' }});
+      
+      if (!invoice) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Invoice not found'
+        });
+      }
+
+      if (!itemIndices || itemIndices.length === 0) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'No items selected for payment'
+        });
+      }
+
+      // Mark selected items as paid and track what types were paid
+      let consultationPaid = false;
+      let labTestPaid = false;
+      let radiologyPaid = false;
+      let medicationPaid = false;
+
+      itemIndices.forEach(index => {
+        if (index < invoice.items.length) {
+          invoice.items[index].paid = true;
+          invoice.items[index].paidAt = new Date();
+          
+          // Check what type of item was paid
+          const itemType = invoice.items[index].type;
+          if (itemType === 'consultation') {
+            consultationPaid = true;
+          } else if (itemType === 'lab_test') {
+            labTestPaid = true;
+          } else if (itemType === 'imaging') {
+            radiologyPaid = true;
+          } else if (itemType === 'medication') {
+            medicationPaid = true;
+          }
+        }
+      });
+      
+      // Record payment
+      const payment = {
+        amount: amount,
+        method: method || 'cash',
+        paidBy: req.user.id,
+        paidAt: new Date(),
+        reference: `Payment for ${itemIndices.length} item(s)`
+      };
+      
+      if (!invoice.payments) invoice.payments = [];
+      invoice.payments.push(payment);
+      
+      // Recalculate totals
+      invoice.amountPaid = (invoice.amountPaid || 0) + amount;
+      invoice.balanceDue = invoice.totalAmount - invoice.amountPaid;
+      
+      // Update status
+      if (invoice.balanceDue <= 0) {
+        invoice.status = 'paid';
+        invoice.paidDate = new Date();
+      } else if (invoice.amountPaid > 0) {
+        invoice.status = 'partial';
+      }
+      
+      await invoice.save();
+
+      // === CHECK IF CONSULTATION PAID FOR NON-INSURED PATIENT ===
+      if (invoice.visit && consultationPaid) {
+        const visit = invoice.visit;
+        const hasInsurance = !!(visit.patient?.insurance?.provider);
+        
+        if (!hasInsurance && visit.status === 'Pending Payment') {
+          visit.status = 'In Queue';
+          visit.consultationFeePaid = true;
+          await visit.save();
+          logger.info(`Visit ${visit.visitId} moved to queue after consultation payment`);
+        }
+      }
+
+      // === CHECK IF LAB TEST, RADIOLOGY, OR MEDICATION PAID ===
+      if (invoice.visit) {
+        const visit = await Visit.findById(invoice.visit._id)
+          .populate('patient');
+        
+        if (visit) {
+          if (labTestPaid) {
+            await updateVisitOrderStatuses(visit, 'lab_test');
+          }
+          if (radiologyPaid) {
+            await updateVisitOrderStatuses(visit, 'imaging');
+          }
+          if (medicationPaid) {
+            await updateVisitOrderStatuses(visit, 'medication');
+          }
+        }
+      }
+
+      logger.info(`Invoice items paid: ${invoice.invoiceNumber} - ${itemIndices.length} items`);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Payment recorded successfully',
+        data: invoice
+      });
+    } catch (error) {
+      logger.error('Pay invoice items error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server Error'
       });
     }
 });
