@@ -106,11 +106,8 @@ const patientSchema = new mongoose.Schema({
   }],
   insurance: {
     provider: {
-      type: String,
-      enum: {
-        values: ['NHIF', 'NSSF', 'ASSEMBLE', 'BRITAM'],
-        message: 'Invalid insurance provider'
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'InsuranceProvider',
       default: null,
       sparse: true
     },

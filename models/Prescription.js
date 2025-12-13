@@ -30,6 +30,52 @@ const prescriptionSchema = new mongoose.Schema({
         ref: 'User'
     },
 
+    status: {
+        type: String,
+        enum: ['Pending', 'Pending Payment', 'Dispensed', 'Unavailable', 'Returned to Doctor'],
+        default: 'Pending'
+    },
+
+    // Dispensing fields
+    dispensedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    dispensedAt: {
+        type: Date
+    },
+    dispensingNotes: {
+        type: String
+    },
+
+    // Unavailable fields
+    unavailableReason: {
+        type: String
+    },
+    markedUnavailableBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    markedUnavailableAt: {
+        type: Date
+    },
+
+    // Return to doctor fields
+    returnedToDoctor: {
+        type: Boolean,
+        default: false
+    },
+    returnToDoctorReason: {
+        type: String
+    },
+    returnedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    returnedAt: {
+        type: Date
+    },
+
     createdAt: {
         type: Date,
         default: Date.now
