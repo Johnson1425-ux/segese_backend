@@ -13,16 +13,27 @@ router.use(protect);
 // @access  Private
 router.get('/', async (req, res) => {
   try {
-    const services = await Service.find({ isActive: true }).sort({ category: 1, name: 1 });
+    const { category } = req.query;
+
+    const filter = { isActive: true };
+
+    if (category) {
+      filter.category = category;
+    }
+
+    const services = await Service
+      .find(filter)
+      .sort({ name: 1 });
+
     res.status(200).json({
       status: 'success',
       data: services
     });
   } catch (error) {
     logger.error('Get services error:', error);
-    res.status(500).json({ 
-      status: 'error', 
-      message: 'Server Error' 
+    res.status(500).json({
+      status: 'error',
+      message: 'Server Error'
     });
   }
 });
