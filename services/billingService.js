@@ -1,5 +1,5 @@
-// services/billingService.js - UPDATED VERSION
-// Simplified insurance logic with proper ObjectId handling
+// services/billingService.js - FIXED VERSION
+// Unified payment tracking with proper synchronization
 
 import mongoose from 'mongoose';
 import Invoice from '../models/Invoice.js';
@@ -14,22 +14,25 @@ import logger from '../utils/logger.js';
 class BillingService {
   /**
    * Create a new invoice
-   * IMPORTANT: Checks if invoice already exists for visit to prevent duplicates
+   * FIXED: Proper insurance handling and duplicate prevention
    */
   async createInvoice(data, userId) {
     try {
-      // === DUPLICATE CHECK ===
+      // === DUPLICATE CHECK WITH BETTER ERROR HANDLING ===
       if (data.visit) {
         const existingInvoice = await Invoice.findOne({ visit: data.visit });
         
         if (existingInvoice) {
           logger.warn(`Invoice already exists for visit ${data.visit}: ${existingInvoice.invoiceNumber}`);
+          // Return existing invoice instead of creating duplicate
           return existingInvoice;
         }
       }
 
       // Fetch patient to check insurance
-      const patient = await Patient.findById(data.patient);
+      const patient = await Patient.findById(data.patient)
+        .populate('insurance.provider');
+      
       if (!patient) {
         throw new Error('Patient not found');
       }
@@ -51,88 +54,79 @@ class BillingService {
         status: 'pending'
       });
       
-      // Calculate totals
+      // Calculate initial totals
       invoice.calculateTotals();
 
-      // === SIMPLIFIED INSURANCE LOGIC ===
+      // === UNIFIED INSURANCE LOGIC ===
       if (hasInsurance) {
         const now = new Date();
         
-        // Mark all items as paid
-        invoice.items.forEach(item => {
-          item.paid = true;
-          item.paidAt = now;
-        });
-        
-        invoice.status = 'paid';
-        invoice.amountPaid = invoice.totalAmount;
-        invoice.balanceDue = 0;
-        invoice.paidDate = now;
-
-        // Handle insurance provider reference
+        // Get provider ObjectId
         let providerObjectId = patient.insurance.provider;
-
-        // If it's a string (provider name), look it up
         if (typeof patient.insurance.provider === 'string') {
           const insuranceProvider = await InsuranceProvider.findOne({ 
             name: { $regex: new RegExp(`^${patient.insurance.provider}$`, 'i') }
           });
           
           if (!insuranceProvider) {
-            // Get list of available providers
-            const availableProviders = await InsuranceProvider.find({ isActive: true })
-              .select('name')
-              .limit(10);
-            
-            const providerNames = availableProviders.map(p => p.name).join(', ');
-            
-            throw new Error(
-              `Insurance provider "${patient.insurance.provider}" not found. ` +
-              `Available providers: ${providerNames}`
-            );
+            throw new Error(`Insurance provider "${patient.insurance.provider}" not found`);
           }
           
           providerObjectId = insuranceProvider._id;
           
-          // Update patient record with ObjectId for future use
+          // Update patient record
           patient.insurance.provider = insuranceProvider._id;
           await patient.save();
-          logger.info(`Auto-migrated patient ${patient._id} insurance provider to ObjectId`);
         }
 
-        // Add insurance coverage info (100% coverage)
+        // Mark all items as paid and covered by insurance
+        invoice.items.forEach(item => {
+          item.paid = true;
+          item.paidAt = now;
+          item.coveredByInsurance = true;
+          item.insuranceApproved = true;
+        });
+        
+        // Add insurance payment record
+        invoice.payments.push({
+          amount: invoice.totalAmount,
+          method: 'insurance',
+          paidBy: userId,
+          paidAt: now,
+          reference: `Insurance payment - ${patient.insurance.membershipNumber || 'N/A'}`,
+          notes: '100% insurance coverage',
+          itemIndices: invoice.items.map((_, index) => index)
+        });
+
+        // Set insurance coverage details
         invoice.insuranceCoverage = {
           provider: providerObjectId,
           policyNumber: patient.insurance.membershipNumber || 'N/A',
           coverageAmount: invoice.totalAmount,
-          status: 'approved'
+          status: 'approved',
+          approvalCode: `AUTO-${Date.now()}`
         };
+
+        // Update invoice status
+        invoice.status = 'paid';
+        invoice.amountPaid = invoice.totalAmount;
+        invoice.balanceDue = 0;
+        invoice.paidDate = now;
 
         logger.info(`Invoice ${invoiceNumber} auto-paid (100% insurance coverage) for patient ${patient._id}`);
       }
       
-      // Save invoice
+      // Save invoice (calculateTotals runs in pre-save hook)
       await invoice.save();
 
-      // Update visit status for insured patients
-      if (invoice.status === 'paid' && data.visit) {
-        const visit = await Visit.findById(data.visit);
-        if (visit && visit.status === 'Pending Payment') {
-          visit.status = 'In Queue';
-          visit.consultationFeePaid = true;
-          visit.invoice = invoice._id;
-          await visit.save();
-          logger.info(`Visit ${visit.visitId} moved to queue (insurance coverage)`);
-        }
+      // === SYNC WITH GLOBAL PAYMENT MODEL ===
+      if (hasInsurance && invoice.payments.length > 0) {
+        await this._createGlobalPaymentRecord(invoice, invoice.payments[0], userId);
       }
-      
-      // Link invoice to visit for non-insured
-      if (!hasInsurance && data.visit) {
-        const visit = await Visit.findById(data.visit);
-        if (visit) {
-          visit.invoice = invoice._id;
-          await visit.save();
-        }
+
+      // Update visit status if applicable
+      if (data.visit) {
+        await this._updateVisitAfterInvoiceCreation(data.visit, invoice, hasInsurance);
       }
       
       // Create audit log
@@ -173,6 +167,7 @@ class BillingService {
 
   /**
    * Add items to existing invoice
+   * FIXED: Proper insurance handling
    */
   async addItemsToInvoice(invoiceId, items, hasInsurance = false) {
     try {
@@ -182,31 +177,42 @@ class BillingService {
         throw new Error('Invoice not found');
       }
 
-      // Add new items - mark as paid if patient has insurance
       const now = new Date();
-      items.forEach(item => {
+      const newItemIndices = [];
+
+      // Add new items
+      items.forEach((item, index) => {
+        const itemIndex = invoice.items.length;
         invoice.items.push({
           ...item,
           paid: hasInsurance,
-          paidAt: hasInsurance ? now : null
+          paidAt: hasInsurance ? now : null,
+          coveredByInsurance: hasInsurance,
+          insuranceApproved: hasInsurance
         });
+        newItemIndices.push(itemIndex);
       });
 
-      // Recalculate totals
-      invoice.calculateTotals();
-
-      // If insured, keep everything as paid (100% coverage)
+      // If insured, add payment for new items
       if (hasInsurance) {
-        invoice.status = 'paid';
-        invoice.amountPaid = invoice.totalAmount;
-        invoice.balanceDue = 0;
+        const newItemsTotal = items.reduce((sum, item) => sum + item.total, 0);
         
+        invoice.payments.push({
+          amount: newItemsTotal,
+          method: 'insurance',
+          paidAt: now,
+          reference: `Insurance payment for additional services`,
+          notes: 'Automatic insurance coverage',
+          itemIndices: newItemIndices
+        });
+
         // Update insurance coverage amount
         if (invoice.insuranceCoverage) {
-          invoice.insuranceCoverage.coverageAmount = invoice.totalAmount;
+          invoice.insuranceCoverage.coverageAmount += newItemsTotal;
         }
       }
 
+      // Save will trigger calculateTotals via pre-save hook
       await invoice.save();
 
       logger.info(`Added ${items.length} item(s) to invoice ${invoice.invoiceNumber}${hasInsurance ? ' (covered by insurance)' : ''}`);
@@ -220,12 +226,10 @@ class BillingService {
 
   /**
    * Process payment for invoice
+   * FIXED: Synchronized with invoice payments array
    */
   async processPayment(paymentData, userId) {
     try {
-      // Generate payment number
-      const paymentNumber = await Payment.generatePaymentNumber();
-      
       // Get invoice
       const invoice = await Invoice.findById(paymentData.invoice);
       if (!invoice) {
@@ -237,7 +241,10 @@ class BillingService {
         throw new Error('Payment amount exceeds balance due');
       }
       
-      // Create payment record
+      // Generate payment number
+      const paymentNumber = await Payment.generatePaymentNumber();
+      
+      // Create global payment record
       const payment = new Payment({
         ...paymentData,
         paymentNumber,
@@ -262,36 +269,18 @@ class BillingService {
       
       await payment.save();
       
-      // Update invoice if payment successful
+      // === SYNC: Update invoice if payment successful ===
       if (payment.status === 'completed') {
+        // Use the legacy addPayment method which handles item marking
         invoice.addPayment(payment.amount);
         await invoice.save();
         
         await this.sendPaymentReceipt(payment, invoice);
       }
 
-      // === CHECK CONSULTATION PAYMENT FOR NON-INSURED PATIENTS ===
-      if (invoice.visit) {
-        const visit = await Visit.findById(invoice.visit).populate('patient');
-        
-        if (visit) {
-          const hasInsurance = !!(visit.patient?.insurance?.provider);
-          
-          // Only for non-insured patients
-          if (!hasInsurance && visit.status === 'Pending Payment') {
-            const consultationItem = invoice.items.find(
-              item => item.type === 'consultation'
-            );
-            
-            // If consultation item exists and is marked as paid
-            if (consultationItem && consultationItem.paid) {
-              visit.status = 'In Queue';
-              visit.consultationFeePaid = true;
-              await visit.save();
-              logger.info(`Visit ${visit.visitId} moved to queue after consultation payment`);
-            }
-          }
-        }
+      // Check if consultation was paid and update visit
+      if (payment.status === 'completed' && invoice.visit) {
+        await this._checkAndUpdateVisitStatus(invoice);
       }
       
       // Create audit log
@@ -318,6 +307,7 @@ class BillingService {
 
   /**
    * Process insurance claim
+   * UNCHANGED - Working correctly
    */
   async processInsuranceClaim(invoiceId, insuranceData, userId) {
     try {
@@ -382,6 +372,7 @@ class BillingService {
 
   /**
    * Generate billing statement for patient
+   * UNCHANGED - Working correctly
    */
   async generateStatement(patientId, startDate, endDate) {
     try {
@@ -427,6 +418,7 @@ class BillingService {
 
   /**
    * Check for overdue invoices
+   * UNCHANGED - Working correctly
    */
   async checkOverdueInvoices() {
     try {
@@ -461,6 +453,7 @@ class BillingService {
 
   /**
    * Process refund
+   * FIXED: Syncs with invoice payments array
    */
   async processRefund(paymentId, refundData, userId) {
     try {
@@ -489,13 +482,22 @@ class BillingService {
         userId
       );
       
+      // === SYNC: Update invoice ===
       const invoice = await Invoice.findById(payment.invoice);
       if (invoice) {
-        invoice.amountPaid -= refundData.amount;
-        invoice.balanceDue += refundData.amount;
-        if (invoice.status === 'paid' && invoice.balanceDue > 0) {
-          invoice.status = 'partial';
-        }
+        // Remove the refunded amount from payments
+        const refundPayment = {
+          amount: -refundData.amount, // Negative amount for refund
+          method: payment.method,
+          paidBy: userId,
+          paidAt: new Date(),
+          reference: `Refund for payment ${payment.paymentNumber}`,
+          notes: refundData.reason
+        };
+        
+        invoice.payments.push(refundPayment);
+        
+        // Save triggers recalculation
         await invoice.save();
       }
       
@@ -518,7 +520,99 @@ class BillingService {
     }
   }
 
-  // Helper methods
+  // ===== PRIVATE HELPER METHODS =====
+
+  /**
+   * Create global Payment record that syncs with invoice
+   */
+  async _createGlobalPaymentRecord(invoice, paymentData, userId) {
+    try {
+      const paymentNumber = await Payment.generatePaymentNumber();
+      
+      const payment = new Payment({
+        paymentNumber,
+        invoice: invoice._id,
+        patient: invoice.patient,
+        amount: paymentData.amount,
+        method: paymentData.method,
+        paymentDate: paymentData.paidAt,
+        processedBy: userId,
+        reference: paymentData.reference,
+        notes: paymentData.notes,
+        status: 'completed'
+      });
+      
+      await payment.save();
+      logger.info(`Created global payment record ${paymentNumber} for invoice ${invoice.invoiceNumber}`);
+      
+      return payment;
+    } catch (error) {
+      logger.error('Create global payment record error:', error);
+      // Don't throw - this is supplementary
+    }
+  }
+
+  /**
+   * Update visit status after invoice creation
+   */
+  async _updateVisitAfterInvoiceCreation(visitId, invoice, hasInsurance) {
+    try {
+      const visit = await Visit.findById(visitId).populate('patient');
+      
+      if (!visit) return;
+
+      visit.invoice = invoice._id;
+      visit.consultationFeeAmount = invoice.items.find(i => i.type === 'consultation')?.total || 0;
+
+      if (hasInsurance) {
+        visit.status = 'In Queue';
+        visit.consultationFeePaid = true;
+        logger.info(`Visit ${visit.visitId} moved to queue (insurance coverage)`);
+      } else {
+        visit.status = 'Pending Payment';
+        visit.consultationFeePaid = false;
+      }
+
+      await visit.save();
+    } catch (error) {
+      logger.error('Update visit after invoice creation error:', error);
+      // Don't throw - this is supplementary
+    }
+  }
+
+  /**
+   * Check and update visit status after payment
+   */
+  async _checkAndUpdateVisitStatus(invoice) {
+    try {
+      const visit = await Visit.findById(invoice.visit).populate('patient');
+      
+      if (!visit) return;
+
+      const hasInsurance = !!(visit.patient?.insurance?.provider);
+
+      // Only for non-insured patients
+      if (!hasInsurance && visit.status === 'Pending Payment') {
+        const consultationItem = invoice.items.find(
+          item => item.type === 'consultation'
+        );
+        
+        // If consultation item exists and is marked as paid
+        if (consultationItem && consultationItem.paid) {
+          visit.status = 'In Queue';
+          visit.consultationFeePaid = true;
+          await visit.save();
+          logger.info(`Visit ${visit.visitId} moved to queue after consultation payment`);
+        }
+      }
+    } catch (error) {
+      logger.error('Check and update visit status error:', error);
+      // Don't throw - this is supplementary
+    }
+  }
+
+  // ===== UTILITY METHODS =====
+
   calculateDueDate(paymentTerms) {
     const date = new Date();
     const termDays = {
@@ -576,5 +670,4 @@ class BillingService {
     return true;
   }
 }
-
 export default new BillingService();
