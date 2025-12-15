@@ -177,8 +177,6 @@ router.post('/', protect, authorize('admin', 'receptionist'), [
   body('firstName').trim().isLength({ min: 2, max: 50 }).withMessage('First name must be between 2 and 50 characters'),
   body('middleName').trim().isLength({ min:2, max: 50 }).withMessage('Middle name must be between 2 and 50 characters'),
   body('lastName').trim().isLength({ min: 2, max: 50 }).withMessage('Last name must be between 2 and 50 characters'),
-  body('email').optional().isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-  body('phone').matches(/^[\+]?[1-9][\d]{0,15}$/).withMessage('Please provide a valid phone number'),
   body('dateOfBirth').isISO8601().withMessage('Please provide a valid date of birth'),
   body('gender').isIn(['Male', 'Female', 'Other']).withMessage('Invalid gender'),
   body('bloodType').optional().isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).withMessage('Invalid blood type'),
