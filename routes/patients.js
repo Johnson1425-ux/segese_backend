@@ -179,7 +179,6 @@ router.post('/', protect, authorize('admin', 'receptionist'), [
   body('lastName').trim().isLength({ min: 2, max: 50 }).withMessage('Last name must be between 2 and 50 characters'),
   body('dateOfBirth').isISO8601().withMessage('Please provide a valid date of birth'),
   body('gender').isIn(['Male', 'Female', 'Other']).withMessage('Invalid gender'),
-  body('bloodType').optional().isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).withMessage('Invalid blood type'),
   body('maritalStatus').optional().isIn(['Single', 'Married', 'Divorced', 'Widowed', 'Other']).withMessage('Invalid marital status'),
   body('address.region').optional().trim().isLength({ min: 2, max: 100 }),
   body('address.district').optional().trim().isLength({ min: 2, max: 100 }),
@@ -252,7 +251,6 @@ router.put('/:id', protect, authorize('admin', 'receptionist'), [
   body('phone').optional().matches(/^[\+]?[1-9][\d]{0,15}$/).withMessage('Please provide a valid phone number'),
   body('dateOfBirth').optional().isISO8601().withMessage('Please provide a valid date of birth'),
   body('gender').optional().isIn(['Male', 'Female', 'Other']).withMessage('Invalid gender'),
-  body('bloodType').optional().isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).withMessage('Invalid blood type'),
   body('maritalStatus').optional().isIn(['Single', 'Married', 'Divorced', 'Widowed', 'Other']).withMessage('Invalid marital status'),
   body('address.region').optional().trim().isLength({ min: 2, max: 100 }),
   body('address.district').optional().trim().isLength({ min: 2, max: 100 }),
@@ -374,5 +372,6 @@ router.get('/insurance-providers/list', protect, async (req, res) => {
     });
   }
 });
+
 
 export default router;
