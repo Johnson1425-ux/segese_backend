@@ -21,7 +21,6 @@ const patientSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
     lowercase: true,
     match: [
       /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
@@ -30,7 +29,6 @@ const patientSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: [true, 'Phone number is required'],
     match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please add a valid phone number']
   },
   dateOfBirth: {
