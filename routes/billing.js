@@ -738,53 +738,74 @@ router.post('/invoices/:invoiceId/pay-items',
         });
       }
 
+      // Validate and calculate the actual amount from selected items
+      let calculatedAmount = 0;
+      const validIndices = [];
+      
+      itemIndices.forEach(index => {
+        if (index < invoice.items.length && !invoice.items[index].paid) {
+          calculatedAmount += invoice.items[index].total;
+          validIndices.push(index);
+        }
+      });
+
+      if (validIndices.length === 0) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'All selected items are already paid'
+        });
+      }
+
+      // Use the calculated amount instead of the amount from request
+      const paymentAmount = Math.abs(calculatedAmount); // Ensure positive value
+
       // Mark selected items as paid and track what types were paid
       let consultationPaid = false;
       let labTestPaid = false;
       let radiologyPaid = false;
       let medicationPaid = false;
 
-      itemIndices.forEach(index => {
-        if (index < invoice.items.length) {
-          invoice.items[index].paid = true;
-          invoice.items[index].paidAt = new Date();
-          
-          // Check what type of item was paid
-          const itemType = invoice.items[index].type;
-          if (itemType === 'consultation') {
-            consultationPaid = true;
-          } else if (itemType === 'lab_test') {
-            labTestPaid = true;
-          } else if (itemType === 'imaging') {
-            radiologyPaid = true;
-          } else if (itemType === 'medication') {
-            medicationPaid = true;
-          }
+      validIndices.forEach(index => {
+        invoice.items[index].paid = true;
+        invoice.items[index].paidAt = new Date();
+        
+        // Check what type of item was paid
+        const itemType = invoice.items[index].type;
+        if (itemType === 'consultation') {
+          consultationPaid = true;
+        } else if (itemType === 'lab_test') {
+          labTestPaid = true;
+        } else if (itemType === 'imaging') {
+          radiologyPaid = true;
+        } else if (itemType === 'medication') {
+          medicationPaid = true;
         }
       });
       
       // Record payment
       const payment = {
-        amount: amount,
+        amount: paymentAmount,
         method: method || 'cash',
         paidBy: req.user.id,
         paidAt: new Date(),
-        reference: `Payment for ${itemIndices.length} item(s)`
+        reference: `Payment for ${validIndices.length} item(s)`
       };
       
       if (!invoice.payments) invoice.payments = [];
       invoice.payments.push(payment);
       
       // Recalculate totals
-      invoice.amountPaid = (invoice.amountPaid || 0) + amount;
+      invoice.amountPaid = (invoice.amountPaid || 0) + paymentAmount;
       invoice.balanceDue = invoice.totalAmount - invoice.amountPaid;
       
-      // Update status
+      // Update status based on actual balance
       if (invoice.balanceDue <= 0) {
         invoice.status = 'paid';
         invoice.paidDate = new Date();
       } else if (invoice.amountPaid > 0) {
         invoice.status = 'partial';
+      } else {
+        invoice.status = 'pending';
       }
       
       await invoice.save();
