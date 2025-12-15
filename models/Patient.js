@@ -218,13 +218,22 @@ patientSchema.index({ assignedDoctor: 1 });
 patientSchema.pre('save', async function(next) {
   if (this.isNew && !this.patientId) {
     const year = new Date().getFullYear();
-    const count = await this.constructor.countDocuments({
-      createdAt: {
-        $gte: new Date(year, 0, 1),
-        $lt: new Date(year + 1, 0, 1)
-      }
-    });
-    this.patientId = `P${year}${(count + 1).toString().padStart(4, '0')}`;
+    
+    // Find the patient with the highest patientId for the current year
+    const lastPatient = await this.constructor.findOne({
+      patientId: { $regex: `^P${year}` }
+    })
+    .sort({ patientId: -1 })
+    .limit(1);
+    
+    let nextNumber = 1;
+    if (lastPatient && lastPatient.patientId) {
+      // Extract the number from the last patient ID (e.g., "P20250002" -> 2)
+      const lastNumber = parseInt(lastPatient.patientId.substring(5)); // Skip "P2025"
+      nextNumber = lastNumber + 1;
+    }
+    
+    this.patientId = `P${year}${nextNumber.toString().padStart(4, '0')}`;
   }
   next();
 });
@@ -281,3 +290,4 @@ patientSchema.methods.addNote = function(noteData) {
 
 
 export default mongoose.model('Patient', patientSchema);
+
