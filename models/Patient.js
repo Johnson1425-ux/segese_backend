@@ -52,7 +52,6 @@ const patientSchema = new mongoose.Schema({
   },
   bloodType: {
     type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
   },
   maritalStatus: {
     type: String,
@@ -279,5 +278,6 @@ patientSchema.methods.addNote = function(noteData) {
   this.notes.push(noteData);
   return this.save();
 };
+
 
 export default mongoose.model('Patient', patientSchema);
