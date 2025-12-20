@@ -30,12 +30,12 @@ const MedicineSchema = new mongoose.Schema({
     required: [true, 'Please add selling price'],
   },
   prices: {
-    BRITAM: { type: Number, default: '-' },
-    NSSF: { type: Number, default: '-' },
-    NHIF: { type: Number, default: '-' },
-    ASSEMBLE: { type: Number, default: '-' },
-    Pharmacy: { type: Number, default: '-' },
-    HospitalShop: { type: Number, default: '-' },
+    BRITAM: { type: Number, default: '0' },
+    NSSF: { type: Number, default: '0' },
+    NHIF: { type: Number, default: '0' },
+    ASSEMBLE: { type: Number, default: '' },
+    Pharmacy: { type: Number, default: '0' },
+    HospitalShop: { type: Number, default: '0' },
   },
   reorderLevel: {
     type: Number,
