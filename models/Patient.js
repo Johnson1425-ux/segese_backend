@@ -208,7 +208,7 @@ patientSchema.virtual('fullName').get(function() {
 
 // Indexes for better query performance
 patientSchema.index({ patientId: 1 });
-patientSchema.index({ email: 1 }, { unique: true });
+patientSchema.index({ email: 1 }, { unique: true, sparse: true });
 patientSchema.index({ phone: 1 });
 patientSchema.index({ status: 1 });
 patientSchema.index({ assignedDoctor: 1 });
