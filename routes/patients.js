@@ -206,21 +206,6 @@ router.post('/', protect, authorize('admin', 'receptionist'), [
       patientData.insurance = await validateInsuranceProvider(patientData.insurance);
     }
 
-    // Check if patient already exists
-    const existingPatient = await Patient.findOne({
-      $or: [
-        { email: patientData.email },
-        { phone: patientData.phone }
-      ]
-    });
-
-    if (existingPatient) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Patient already exists with this email or phone number'
-      });
-    }
-
     const patient = await Patient.create(patientData);
     
     // Populate insurance provider before sending response
@@ -277,24 +262,6 @@ router.put('/:id', protect, authorize('admin', 'receptionist'), [
         status: 'error',
         message: 'Patient not found'
       });
-    }
-
-    // Check if email or phone is being changed and if it's already taken
-    if ((req.body.email && req.body.email !== patient.email) || (req.body.phone && req.body.phone !== patient.phone)){
-      const existingPatient = await Patient.findOne({
-      $or: [
-      { email: req.body.email },
-      { phone: req.body.phone }
-      ],
-      _id: { $ne: req.params.id }
-      });
-
-      if (existingPatient) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Email or phone number is already taken by another patient'
-        });
-      }
     }
 
     // Clean insurance data
