@@ -330,6 +330,27 @@ router.post('/:id/prescriptions',
         });
       }
 
+      // Step 1.5: Check for duplicate medication in prescriptions
+      const existingPrescription = visit.prescriptions.find(
+        prescription => prescription.medication.toLowerCase() === medicineItem.name.toLowerCase()
+      );
+
+      if (existingPrescription) {
+        return res.status(400).json({
+          status: 'error',
+          message: `Medication "${medicineItem.name}" has already been prescribed for this visit`,
+          data: {
+            existingPrescription: {
+              medication: existingPrescription.medication,
+              dosage: existingPrescription.dosage,
+              frequency: existingPrescription.frequency,
+              duration: existingPrescription.duration,
+              status: existingPrescription.status
+            }
+          }
+        });
+      }
+
       // Step 2: Get patient's insurance provider
       const patient = await Patient.findById(visit.patient._id)
         .populate('insurance.provider', 'name');
