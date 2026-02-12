@@ -113,11 +113,9 @@ router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
 
     // === USE CENTRALIZED BILLING SERVICE ===
     // Look up consultation service
-    const consultationService = await Service.findOne({ 
-      $or: [
-        { category: 'Consultation' },
-        { name: { $regex: /consultation/i } }
-      ]
+    const consultationService = await Service.findOne({
+        name: 'Consultation fees',
+        category: 'Consultation'
     });
 
     if (consultationService) {
