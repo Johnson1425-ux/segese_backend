@@ -308,7 +308,7 @@ router.post('/:id/prescriptions',
     try {
       const visit = req.visit;
       const hasInsurance = req.hasInsurance;
-      const { medication, dosage, frequency, duration } = req.body;
+      const { medication, medicineType, dosage, frequency, duration } = req.body;
 
       // Step 1: Check if medication exists in Medicine model
       const Medicine = mongoose.model('Medicine');
