@@ -312,12 +312,11 @@ router.post('/:id/prescriptions',
 
       // Step 1: Check if medication exists in Medicine model
       const Medicine = mongoose.model('Medicine');
-      const medicationName = medication.split(' ')[0]; // Extract base name (e.g., "Amoxicillin 500mg" -> "Amoxicillin")
       
       const medicineItem = await Medicine.findOne({ 
         $or: [
           { name: { $regex: new RegExp(`^${medication}$`, 'i') } },
-          { name: { $regex: new RegExp(`^${medicationName}`, 'i') } }
+          ...(medicineType && { type: medicineType })
         ]
       });
 
