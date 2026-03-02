@@ -1,11 +1,16 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 import IPDRecord from '../models/IPDRecord.js';
 import Patient from '../models/Patient.js';
 import Ward from '../models/Ward.js';
 import Bed from '../models/Bed.js';
+import Invoice from '../models/Invoice.js';
+import Service from '../models/Service.js';
+import billingService from '../services/billingService.js';
 import { protect, authorize } from '../middleware/auth.js';
 import logger from '../utils/logger.js';
+import { getIPDMedications, getIPDRecordMedications } from '../controllers/ipdRecordsController.js';
 
 const router = express.Router();
 
@@ -107,6 +112,12 @@ router.get('/statistics', protect, authorize('admin', 'doctor', 'nurse'), async 
   }
 });
 
+// @desc    Get medications from IPD records with optional filters
+// @route   GET /api/ipd-records/medications
+// @access  Private
+// Query params: ipdRecordId, patientId, medicationStatus, medicationName
+router.get('/medications', protect, authorize('admin', 'doctor', 'nurse', 'pharmacist'), getIPDMedications);
+
 // @desc    Get single IPD record
 // @route   GET /api/ipd-records/:id
 // @access  Private
@@ -146,7 +157,7 @@ router.get('/:id', protect, async (req, res) => {
   }
 });
 
-// @desc    Create new IPD record (admit patient)
+// @desc    Create new IPD record (admit patient) WITH AUTOMATIC INVOICE CREATION
 // @route   POST /api/ipd-records
 // @access  Private (Admin, Doctor, Nurse)
 router.post('/', protect, authorize('admin', 'doctor', 'nurse'), [
@@ -216,10 +227,10 @@ router.post('/', protect, authorize('admin', 'doctor', 'nurse'), [
       });
     }
 
-    // Create IPD record
+    // === CREATE IPD RECORD ===
     const ipdRecord = await IPDRecord.create(req.body);
 
-    // Update bed status
+    // === UPDATE BED STATUS ===
     bed.status = 'occupied';
     bed.currentPatient = req.body.patient;
     if (req.body.assignedNurse) {
@@ -227,30 +238,101 @@ router.post('/', protect, authorize('admin', 'doctor', 'nurse'), [
     }
     await bed.save();
 
-    // Update ward occupancy
+    // === UPDATE WARD OCCUPANCY ===
     ward.occupiedBeds += 1;
     await ward.save();
 
-    // Update patient status
+    // === UPDATE PATIENT STATUS ===
     patient.status = 'active';
     await patient.save();
 
+    // === CREATE INVOICE FOR IPD BILLING ===
+    const invoiceNumber = await Invoice.generateInvoiceNumber();
+    
+    // Get room rate from bed or ward
+    const roomRate = await Service.findOne({ 
+      $or: [
+        { category: 'Other'},
+        { name: 'Room Charge' }
+      ],
+      isActive: true
+    });
+    
+    // Create initial invoice with first day's room charge
+    const invoice = await Invoice.create({
+      invoiceNumber,
+      patient: req.body.patient,
+      generatedBy: req.user.id,
+      status: 'pending',
+      items: [{
+        type: 'room_charge',
+        description: `Admission - ${ward.name} (Bed ${bed.bedNumber}) - Day 1`,
+        quantity: 1,
+        unitPrice: roomRate.price,
+        discount: 0,
+        tax: 0,
+        total: roomRate.price,
+        paid: false,
+        notes: `Initial room charge for ${ipdRecord.admissionNumber}`
+      }],
+      subtotal: roomRate.price,
+      totalDiscount: 0,
+      totalTax: 0,
+      totalAmount: roomRate.price,
+      patientResponsibility: roomRate.price,
+      amountPaid: 0,
+      balanceDue: roomRate.price,
+      payments: [],
+      paymentTerms: 'immediate',
+      dueDate: new Date(),
+      issueDate: new Date(),
+      notes: `IPD Invoice for Admission ${ipdRecord.admissionNumber}`
+    });
+
+    // Link invoice to IPD record
+    ipdRecord.billing = {
+      invoice: invoice._id,
+      dailyRoomCharge: roomRate.price,
+      totalAmount: roomRate.price,
+      paidAmount: 0,
+      balance: roomRate.price,
+      lastRoomChargeDate: new Date()
+    };
+    await ipdRecord.save();
+
+    // Populate and return
     const populatedRecord = await IPDRecord.findById(ipdRecord._id)
-      .populate('patient', 'firstName lastName patientId')
-      .populate('ward', 'name wardNumber')
-      .populate('bed', 'bedNumber')
-      .populate('admittingDoctor', 'firstName lastName');
+      .populate('patient', 'firstName lastName patientId email phone')
+      .populate('ward', 'name wardNumber type floor dailyRate')
+      .populate('bed', 'bedNumber type dailyRate')
+      .populate('admittingDoctor', 'firstName lastName email')
+      .populate('billing.invoice');
+
+    logger.info(
+      `IPD admission created: ${ipdRecord.admissionNumber}. ` +
+      `Invoice ${invoice.invoiceNumber} created with initial room charge: ${roomRate.price}`
+    );
 
     res.status(201).json({
       status: 'success',
-      message: 'Patient admitted successfully',
-      data: populatedRecord
+      message: 'Patient admitted successfully. Invoice created.',
+      data: {
+        record: populatedRecord,
+        invoice: invoice,
+        billing: {
+          invoiceNumber: invoice.invoiceNumber,
+          totalAmount: roomRate.price,
+          balance: roomRate.price,
+          dailyRate: roomRate.price
+        }
+      }
     });
   } catch (error) {
     logger.error('Create IPD record error:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Server error'
+      message: 'Server error',
+      error: error.message
     });
   }
 });
@@ -335,6 +417,7 @@ router.put('/:id/discharge', protect, authorize('admin', 'doctor'), [
     record.dischargeReason = req.body.dischargeReason;
     record.dischargeSummary = req.body.dischargeSummary;
     record.dischargedBy = req.user._id;
+    record.isActive = false; // Mark record as inactive upon discharge
     await record.save();
 
     // Release bed
@@ -530,6 +613,8 @@ router.post('/:id/medications', protect, authorize('admin', 'doctor'), [
       });
     }
 
+    const { medication, dosage, frequency, startDate, endDate, notes } = req.body;
+
     const record = await IPDRecord.findById(req.params.id);
 
     if (!record) {
@@ -539,17 +624,45 @@ router.post('/:id/medications', protect, authorize('admin', 'doctor'), [
       });
     }
 
-    const medication = {
+    // Step 1: Check if medication exists in Medicine model (your batch-based system)
+      const Medicine = mongoose.model('Medicine');
+      
+      // Try to find medicine by exact name or partial match
+      let medicineItem = await Medicine.findOne({ 
+        name: { $regex: new RegExp(`^${medication}$`, 'i') }
+      });
+
+      // If not found by exact match, try partial match on first word
+      if (!medicineItem) {
+        const medicationName = medication.split(' ')[0];
+        medicineItem = await Medicine.findOne({ 
+          name: { $regex: new RegExp(`^${medicationName}`, 'i') }
+        });
+      }
+
+      if (!medicineItem) {
+        return res.status(404).json({
+          status: 'error',
+          message: `Medication "${medication}" not found in inventory. Please check medicine catalog.`
+        });
+      }
+
+    const medicationRecord = {
       medication: req.body.medication,
+      medicineId: medicineItem._id,
       dosage: req.body.dosage,
       frequency: req.body.frequency,
+      patient: record.patient._id,
       startDate: req.body.startDate || new Date(),
+      status: 'Pending Quantification',
+      quantifiedQuantity: null,
+      quantifiedPrice: null,
       endDate: req.body.endDate,
       prescribedBy: req.user._id,
       notes: req.body.notes
     };
 
-    record.medications.push(medication);
+    record.medications.push(medicationRecord);
     await record.save();
 
     res.status(200).json({
@@ -562,6 +675,250 @@ router.post('/:id/medications', protect, authorize('admin', 'doctor'), [
     res.status(500).json({
       status: 'error',
       message: 'Server error'
+    });
+  }
+});
+
+// @desc    Update medication status in IPD record
+// @route   PATCH /api/ipd-records/:id/medications/:medicationId
+// @access  Private (Pharmacist, Admin)
+router.patch('/:id/medications/:medicationId', protect, authorize('admin', 'pharmacist'), async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Status is required'
+      });
+    }
+
+    const record = await IPDRecord.findById(req.params.id);
+
+    if (!record) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'IPD record not found'
+      });
+    }
+
+    // Find and update the medication
+    const medication = record.medications.id(req.params.medicationId);
+
+    if (!medication) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Medication not found in this record'
+      });
+    }
+
+    medication.status = status;
+    await record.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Medication status updated successfully',
+      data: medication
+    });
+  } catch (error) {
+    logger.error('Update medication status error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
+  }
+});
+
+// @desc    Transfer patient to different ward/bed
+// @route   POST /api/ipd-records/:id/transfer
+// @access  Private (Admin, Doctor, Nurse)
+router.post('/:id/transfer', protect, authorize('admin', 'doctor', 'nurse'), [
+  body('newWard').notEmpty().withMessage('New ward is required'),
+  body('newBed').notEmpty().withMessage('New bed is required'),
+  body('transferReason').trim().notEmpty().withMessage('Transfer reason is required'),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const record = await IPDRecord.findById(req.params.id);
+
+    if (!record) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'IPD record not found'
+      });
+    }
+
+    // Check if patient is already discharged
+    if (record.status === 'discharged') {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Cannot transfer discharged patient'
+      });
+    }
+
+    const { newWard, newBed, transferReason, notes } = req.body;
+
+    // Check if new ward exists
+    const targetWard = await Ward.findById(newWard);
+    if (!targetWard) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Target ward not found'
+      });
+    }
+
+    // Check if new bed exists and is available
+    const targetBed = await Bed.findById(newBed);
+    if (!targetBed) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Target bed not found'
+      });
+    }
+
+    // Verify bed belongs to target ward
+    if (targetBed.ward.toString() !== newWard.toString()) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Selected bed does not belong to the target ward'
+      });
+    }
+
+    if (targetBed.status !== 'available') {
+      return res.status(400).json({
+        status: 'error',
+        message: `Target bed is not available. Current status: ${targetBed.status}`
+      });
+    }
+
+    // Check if transferring to same ward/bed
+    if (record.ward.toString() === newWard.toString() && 
+        record.bed.toString() === newBed.toString()) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Patient is already in this ward and bed'
+      });
+    }
+
+    // Get current ward and bed
+    const currentWard = await Ward.findById(record.ward);
+    const currentBed = await Bed.findById(record.bed);
+
+    // === PERFORM TRANSFER ===
+
+    // 1. Release current bed
+    if (currentBed) {
+      currentBed.status = 'cleaning';
+      currentBed.currentPatient = null;
+      currentBed.assignedNurse = null;
+      await currentBed.save();
+    }
+
+    // 2. Update current ward occupancy (decrease)
+    if (currentWard) {
+      currentWard.occupiedBeds = Math.max(0, currentWard.occupiedBeds - 1);
+      await currentWard.save();
+    }
+
+    // 3. Occupy new bed
+    targetBed.status = 'occupied';
+    targetBed.currentPatient = record.patient;
+    if (req.body.assignedNurse) {
+      targetBed.assignedNurse = req.body.assignedNurse;
+    }
+    await targetBed.save();
+
+    // 4. Update new ward occupancy (increase)
+    targetWard.occupiedBeds += 1;
+    await targetWard.save();
+
+    // 5. Store transfer history in nursing notes
+    const transferNote = {
+      note: `Patient transferred from ${currentWard?.name || 'Unknown'} (Bed ${currentBed?.bedNumber || 'Unknown'}) to ${targetWard.name} (Bed ${targetBed.bedNumber}). Reason: ${transferReason}. ${notes ? 'Notes: ' + notes : ''}`,
+      recordedBy: req.user._id,
+      recordedDate: new Date(),
+      category: 'general'
+    };
+    record.nursingNotes.push(transferNote);
+
+    // 6. Update IPD record with new ward and bed
+    record.ward = newWard;
+    record.bed = newBed;
+    if (req.body.assignedNurse) {
+      record.assignedNurse = req.body.assignedNurse;
+    }
+    
+    // Update status if transferring to ICU/CCU
+    if (targetWard.type === 'icu' || targetWard.type === 'ccu') {
+      record.status = 'critical';
+    } else if (record.status === 'critical' && 
+               targetWard.type !== 'icu' && 
+               targetWard.type !== 'ccu') {
+      record.status = 'stable';
+    }
+
+    await record.save();
+
+    const populatedRecord = await IPDRecord.findById(record._id)
+      .populate('patient', 'firstName lastName patientId')
+      .populate('ward', 'name wardNumber type floor')
+      .populate('bed', 'bedNumber type')
+      .populate('assignedNurse', 'firstName lastName');
+
+    logger.info(
+      `Patient ${record.patient} transferred from ward ${currentWard?._id} to ${newWard} ` +
+      `by user ${req.user._id}. Reason: ${transferReason}`
+    );
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Patient transferred successfully',
+      data: {
+        record: populatedRecord,
+        transfer: {
+          from: {
+            ward: currentWard ? {
+              _id: currentWard._id,
+              name: currentWard.name,
+              wardNumber: currentWard.wardNumber
+            } : null,
+            bed: currentBed ? {
+              _id: currentBed._id,
+              bedNumber: currentBed.bedNumber
+            } : null
+          },
+          to: {
+            ward: {
+              _id: targetWard._id,
+              name: targetWard.name,
+              wardNumber: targetWard.wardNumber
+            },
+            bed: {
+              _id: targetBed._id,
+              bedNumber: targetBed.bedNumber
+            }
+          },
+          reason: transferReason,
+          notes: notes,
+          transferredBy: req.user._id,
+          transferredAt: new Date()
+        }
+      }
+    });
+  } catch (error) {
+    logger.error('Transfer patient error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error',
+      error: error.message
     });
   }
 });
@@ -594,5 +951,10 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
     });
   }
 });
+
+// @desc    Get medications for a specific IPD record
+// @route   GET /api/ipd-records/:id/medications
+// @access  Private
+router.get('/:id/medications', protect, authorize('admin', 'doctor', 'nurse', 'pharmacist'), getIPDRecordMedications);
 
 export default router;

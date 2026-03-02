@@ -2,12 +2,14 @@ import mongoose from 'mongoose';
 
 // Sub-schema for Vital Signs
 const vitalSignsSchema = new mongoose.Schema({
-  temperature: Number,
-  bloodPressure: String,
-  heartRate: Number,
-  respiratoryRate: Number,
-  oxygenSaturation: Number,
-}, { _id: false });
+  temperature: { type: Number, required: true },
+  bloodPressure: { type: String, required: true },
+  heartRate: { type: Number, required: true },
+  oxygenSaturation: { type: Number, required: true },
+  patient: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
+  recordedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  recordedAt: { type: Date, default: Date.now }
+}, { timestamps: true });
 
 // Sub-schema for Diagnosis
 const diagnosisSchema = new mongoose.Schema({
@@ -48,13 +50,21 @@ const radiologySchema = new mongoose.Schema({
 // Sub-schema for Prescriptions (Clinical tracking only)
 const prescriptionSchema = new mongoose.Schema({
   medication: { type: String, required: true },
+  medicineId: { type: mongoose.Schema.Types.ObjectId, ref: 'Medicine' }, // ADDED - Reference to Medicine model
   patient: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
   dosage: { type: String, required: true },
   frequency: { type: String, required: true },
   duration: String,
   notes: String,
   prescribedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  status: { type: String, enum: ['Pending Payment', 'Pending', 'Dispensed'], default: 'Pending' },
+  status: { type: String, enum: ['Pending Quantification', 'Quantified', 'Pending Payment', 'Paid', 'Pending', 'Dispensed'], default: 'Pending Quantification' },
+  quantifiedQuantity: Number, // NEW - Set by pharmacist
+  quantifiedPrice: Number, // NEW - Set by pharmacist
+  totalPrice: Number, // NEW - quantity * price
+  quantifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Pharmacist who quantified
+  quantifiedAt: Date,
+  sentToPharmacyAt: Date,
+  sentToBillingAt: Date,
   createdAt: { type: Date, default: Date.now },
   isActive: { type: Boolean, default: true }
 });
@@ -83,7 +93,7 @@ const visitSchema = new mongoose.Schema({
   duration: Number,
   
   // Clinical data
-  vitalSigns: vitalSignsSchema,
+  vitalSigns: [vitalSignsSchema],
   diagnosis: [diagnosisSchema],
   labOrders: [labOrderSchema],
   radiologyOrders: [radiologySchema],

@@ -26,7 +26,7 @@ router.get('/admin/stats', authorize('admin'), async (req, res) => {
 
     // Get active visits (status not completed or cancelled)
     const activeVisits = await Visit.countDocuments({
-      status: { $in: ['In Queue', 'In-Progress', 'active'] }
+      isActive: true
     });
 
     // Get available doctors (all doctors marked as available)
@@ -62,13 +62,16 @@ router.get('/admin/stats', authorize('admin'), async (req, res) => {
       status: { $in: ['pending', 'overdue'] }
     });
 
+    const totalInvoices = await Invoice.countDocuments();
+
     const stats = {
       totalPatients,
       activeVisits,
       totalDoctors,
       appointmentsToday,
       totalRevenue,
-      pendingBills
+      pendingBills,
+      totalInvoices
     };
 
     res.status(200).json({ 

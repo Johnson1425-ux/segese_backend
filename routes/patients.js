@@ -142,6 +142,32 @@ router.get('/', protect, authorize('admin', 'doctor', 'receptionist', 'pharmacis
   }
 });
 
+// @desc    Get patients statistics
+// @route   GET /api/patients/statistics
+// @access  Private
+router.get('/statistics', protect, authorize('admin'), async (req, res) => {
+  try {
+    const stats = await Patient.getStatistics();
+    
+    // Get current admissions count
+    const totalPatients = await Patient.countDocuments();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...stats,
+        totalPatients
+      }
+    });
+  } catch (error) {
+    logger.error('Get patients statistics error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
+  }
+});
+
 // @desc    Get single patient
 // @route   GET /api/patients/:id
 // @access  Private
