@@ -16,35 +16,41 @@ router.use(protect);
 // @route   GET /api/visits
 router.get('/', authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
     try {
-        const { search } = req.query;
-        const query = { isActive: true };
+      const { search } = req.query;
+      const query = { isActive: true };
 
-        if (req.user.role === 'doctor') {
-            query.doctor = req.user.id;
-        }
+      if (req.user.role === 'doctor') {
+          query.doctor = req.user.id;
+      }
 
-        let visits;
-        if (search) {
-            const patientSearchRegex = new RegExp(search, 'i');
-            const matchingPatients = await Patient.find({
-                $or: [
-                    { firstName: { $regex: patientSearchRegex } },
-                    { lastName: { $regex: patientSearchRegex } }
-                ]
-            }).select('_id');
+      let visits;
+      if (search) {
+        const patientSearchRegex = new RegExp(search, 'i');
+        const matchingPatients = await Patient.find({
+          $or: [
+            { firstName: { $regex: patientSearchRegex } },
+            { lastName: { $regex: patientSearchRegex } }
+          ]
+        }).select('_id');
 
-            query.patient = { $in: matchingPatients.map(p => p._id) };
-        }
+        query.patient = { $in: matchingPatients.map(p => p._id) };
+      }
 
-        visits = await Visit.find(query)
-            .populate('patient', 'firstName lastName fullName') 
-            .populate('doctor', 'firstName lastName fullName')
-            .sort({ visitDate: -1 });
+      visits = await Visit.find(query)
+      .populate('patient', 'firstName lastName fullName') 
+      .populate('doctor', 'firstName lastName fullName')
+      .sort({ visitDate: -1 });
 
-        res.status(200).json({ status: 'success', data: visits });
+      res.status(200).json({ 
+        status: 'success', 
+        data: visits 
+      });
     } catch (error) {
-        logger.error('Get visits error:', error);
-        res.status(500).json({ status: 'error', message: 'Server Error' });
+      logger.error('Get visits error:', error);
+      res.status(500).json({ 
+        status: 'error', 
+        message: 'Server Error' 
+      });
     }
 });
 
@@ -52,19 +58,114 @@ router.get('/', authorize('admin', 'doctor', 'receptionist'), async (req, res) =
 // @route   GET /api/visits/:id
 router.get('/:id', authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
     try {
-        const visit = await Visit.findById(req.params.id)
-            .populate('patient')
-            .populate('doctor')
-            .populate('invoice');
+      const User = mongoose.model('User');
+      
+      const visit = await Visit.findById(req.params.id)
+        .populate('patient')
+        .populate('doctor')
+        .populate('invoice');
         
-        if (!visit) {
-            return res.status(404).json({ status: 'error', message: 'Visit not found' });
+      if (!visit) {
+        return res.status(404).json({ 
+          status: 'error', 
+          message: 'Visit not found' 
+        });
+      }
+
+      // Convert to plain object for easier manipulation
+      const visitObj = visit.toObject();
+
+      // Collect all user IDs that need to be populated
+      const userIds = new Set();
+      
+      visitObj.vitalSigns?.forEach(v => {
+        if (v.recordedBy) userIds.add(v.recordedBy.toString());
+      });
+      
+      visitObj.diagnosis?.forEach(d => {
+        if (d.diagnosedBy) userIds.add(d.diagnosedBy.toString());
+      });
+      
+      visitObj.labOrders?.forEach(l => {
+        if (l.orderedBy) userIds.add(l.orderedBy.toString());
+        if (l.completedBy) userIds.add(l.completedBy.toString());
+      });
+      
+      visitObj.radiologyOrders?.forEach(r => {
+        if (r.orderedBy) userIds.add(r.orderedBy.toString());
+        if (r.completedBy) userIds.add(r.completedBy.toString());
+      });
+      
+      visitObj.prescriptions?.forEach(p => {
+        if (p.prescribedBy) userIds.add(p.prescribedBy.toString());
+        if (p.quantifiedBy) userIds.add(p.quantifiedBy.toString());
+      });
+
+      // Fetch all users at once
+      const users = await User.find({ 
+        _id: { $in: Array.from(userIds) } 
+      }).select('firstName lastName');
+
+      // Create a lookup map
+      const userMap = new Map();
+      users.forEach(user => {
+        userMap.set(user._id.toString(), {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName
+        });
+      });
+
+      // Populate the user data
+      visitObj.vitalSigns?.forEach(v => {
+        if (v.recordedBy) {
+          v.recordedBy = userMap.get(v.recordedBy.toString()) || v.recordedBy;
         }
+      });
+      
+      visitObj.diagnosis?.forEach(d => {
+        if (d.diagnosedBy) {
+          d.diagnosedBy = userMap.get(d.diagnosedBy.toString()) || d.diagnosedBy;
+        }
+      });
+      
+      visitObj.labOrders?.forEach(l => {
+        if (l.orderedBy) {
+          l.orderedBy = userMap.get(l.orderedBy.toString()) || l.orderedBy;
+        }
+        if (l.completedBy) {
+          l.completedBy = userMap.get(l.completedBy.toString()) || l.completedBy;
+        }
+      });
+      
+      visitObj.radiologyOrders?.forEach(r => {
+        if (r.orderedBy) {
+          r.orderedBy = userMap.get(r.orderedBy.toString()) || r.orderedBy;
+        }
+        if (r.completedBy) {
+          r.completedBy = userMap.get(r.completedBy.toString()) || r.completedBy;
+        }
+      });
+      
+      visitObj.prescriptions?.forEach(p => {
+        if (p.prescribedBy) {
+          p.prescribedBy = userMap.get(p.prescribedBy.toString()) || p.prescribedBy;
+        }
+        if (p.quantifiedBy) {
+          p.quantifiedBy = userMap.get(p.quantifiedBy.toString()) || p.quantifiedBy;
+        }
+      });
         
-        res.status(200).json({ status: 'success', data: visit });
+      res.status(200).json({ 
+        status: 'success', 
+        data: visitObj 
+      });
     } catch (error) {
-        logger.error('Get single visit error:', error);
-        res.status(500).json({ status: 'error', message: 'Server Error' });
+      logger.error('Get single visit error:', error);
+      res.status(500).json({ 
+        status: 'error',
+        message: 'Server Error' 
+      });
     }
 });
 
@@ -114,10 +215,8 @@ router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
     // === USE CENTRALIZED BILLING SERVICE ===
     // Look up consultation service
     const consultationService = await Service.findOne({ 
-      $or: [
-        { category: 'Consultation' },
-        { name: { $regex: /consultation/i } }
-      ]
+      name: 'Consultation fees',
+      category: 'Consultation'
     });
 
     if (consultationService) {
@@ -154,7 +253,49 @@ router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
     });
   } catch (error) {
     logger.error('Create visit error:', error);
-    res.status(400).json({ status: 'error', message: error.message });
+    res.status(400).json({ 
+      status: 'error', 
+      message: error.message 
+    });
+  }
+});
+
+// @desc    Add vital signs to visit
+// @route   POST /api/visits/:id/vitals
+// @access  Private (Nurse, Doctor, Receptionist)
+router.post('/:id/vitals', authorize('admin', 'nurse', 'doctor', 'receptionist'),checkPaymentEligibility, async (req, res) => {
+  try {
+    const visit = req.visit;
+    const { temperature, bloodPressure, heartRate, oxygenSaturation } = req.body;
+
+    const newVitalsData = {
+      temperature,
+      bloodPressure,
+      heartRate,
+      oxygenSaturation,
+      patient: visit.patient._id,
+      recordedBy: req.user.id,
+      recordedAt: new Date() // Explicitly set the recording time
+    };
+
+    if (!visit.vitalSigns) {
+      visit.vitalSigns = [];
+    }
+
+    visit.vitalSigns.push(newVitalsData);
+    await visit.save();
+
+    res.status(201).json({
+      status: 'success',
+      message: 'Vital signs recorded successfully',
+      data: newVitalsData
+    });
+  } catch (error) {
+    logger.error('Add vital signs error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
   }
 });
 
@@ -222,7 +363,10 @@ router.post('/:id/lab-orders',
       });
     } catch (error) {
       logger.error('Add lab order error:', error);
-      res.status(400).json({ status: 'error', message: error.message });
+      res.status(400).json({ 
+        status: 'error', 
+        message: error.message 
+      });
     }
 });
 
@@ -297,11 +441,14 @@ router.post('/:id/radiology-orders',
       });
     } catch (error) {
       logger.error('Add radiology order error:', error);
-      res.status(400).json({ status: 'error', message: error.message });
+      res.status(400).json({ 
+        status: 'error', 
+        message: error.message 
+      });
     }
 });
 
-// @desc    Add prescription to invoice (Medicine + ItemPrice based on Insurance)
+// @desc    Add prescription (NEW WORKFLOW - goes to pharmacist first, NOT added to invoice yet)
 // @route   POST /api/visits/:id/prescriptions
 router.post('/:id/prescriptions', 
   authorize('admin', 'doctor'),
@@ -312,117 +459,55 @@ router.post('/:id/prescriptions',
       const hasInsurance = req.hasInsurance;
       const { medication, dosage, frequency, duration } = req.body;
 
-      // Step 1: Check if medication exists in Medicine model
+      // Step 1: Check if medication exists in Medicine model (your batch-based system)
       const Medicine = mongoose.model('Medicine');
-      const medicationName = medication.split(' ')[0]; // Extract base name (e.g., "Amoxicillin 500mg" -> "Amoxicillin")
       
-      const medicineItem = await Medicine.findOne({ 
-        $or: [
-          { name: { $regex: new RegExp(`^${medication}$`, 'i') } },
-          { name: { $regex: new RegExp(`^${medicationName}`, 'i') } }
-        ]
+      // Try to find medicine by exact name or partial match
+      const medicineQuery = await Medicine.findOne({ 
+        name: { $regex: new RegExp(`^${medication}$`, 'i') }
       });
+
+      if (medicineType) {
+        medicineQuery.type = medicineType;
+      }
+
+      const medicineItem = await Medicine.findOne(medicineQuery);
 
       if (!medicineItem) {
         return res.status(404).json({
           status: 'error',
-          message: `Medication "${medication}" not found in inventory`
+          message: `Medication "${medication}" not found in inventory.`
         });
       }
 
-      // Step 2: Get patient's insurance provider
-      const patient = await Patient.findById(visit.patient._id)
-        .populate('insurance.provider', 'name');
-      
-      const insuranceProviderName = patient?.insurance?.provider?.name;
-
-      // Step 3: Fetch price from ItemPrice model based on insurance
-      const ItemPrice = mongoose.model('ItemPrice');
-      const itemPrice = await ItemPrice.findOne({ 
-        name: { $regex: new RegExp(`^${medicineItem.name}$`, 'i') } 
-      });
-
-      let price = 0;
-      let priceSource = 'Not Found';
-
-      if (itemPrice) {
-        if (hasInsurance && insuranceProviderName && itemPrice.prices[insuranceProviderName]) {
-          // Use insurance-specific price (e.g., NHIF, NSSF, BRITAM, ASSEMBLE)
-          price = itemPrice.prices[insuranceProviderName];
-          priceSource = insuranceProviderName;
-        } else if (itemPrice.prices.Pharmacy) {
-          // Use Pharmacy price for cash patients or if insurance price not available
-          price = itemPrice.prices.Pharmacy;
-          priceSource = 'Pharmacy (Cash)';
-        } else {
-          // Fallback to Medicine model selling price
-          price = medicineItem.sellingPrice || 0;
-          priceSource = 'Medicine Model';
-        }
-      } else {
-        // ItemPrice not found, use Medicine model selling price
-        price = medicineItem.sellingPrice || 0;
-        priceSource = 'Medicine Model (No ItemPrice)';
-      }
-
-      if (price <= 0) {
-        return res.status(400).json({
-          status: 'error',
-          message: `No price configured for medication "${medication}" with insurance provider "${insuranceProviderName || 'Cash'}"`
-        });
-      }
-
-      // Determine initial status based on insurance
-      const initialStatus = hasInsurance ? 'Pending' : 'Pending Payment';
-
-      // Step 4: Add to visit (clinical tracking)
+      // NEW: Prescription goes to pharmacist first with 'Pending Quantification' status
+      // DO NOT add to invoice yet
       const newPrescription = {
         medication: medicineItem.name,
+        medicineId: medicineItem._id, // Store medicine ID for later
         dosage,
         frequency,
         duration,
         patient: visit.patient._id,
         prescribedBy: req.user.id,
-        status: initialStatus
+        status: 'Pending Quantification', // NEW STATUS
+        quantifiedQuantity: null, // Will be set by pharmacist
+        quantifiedPrice: null, // Will be set by pharmacist
+        sentToPharmacyAt: new Date()
       };
+      
       visit.prescriptions.push(newPrescription);
       await visit.save();
 
-      // Step 5: Add to invoice via billingService
-      if (visit.invoice) {
-        await billingService.addItemsToInvoice(
-          visit.invoice,
-          [{
-            type: 'medication',
-            description: `${medicineItem.name} - ${dosage}, ${frequency}`,
-            quantity: 1,
-            unitPrice: price,
-            total: price,
-            notes: duration,
-            insuranceProvider: insuranceProviderName || 'Cash'
-          }],
-          hasInsurance
-        );
-
-        logger.info(
-          `Medication "${medicineItem.name}" added to invoice for visit ${visit.visitId}. ` +
-          `Price: ${price} (Source: ${priceSource})`
-        );
-      }
+      logger.info(
+        `Prescription for "${medicineItem.name}" created for visit ${visit.visitId}. ` +
+        `Sent to pharmacy for quantification.`
+      );
 
       res.status(201).json({ 
         status: 'success', 
         data: newPrescription,
-        message: hasInsurance ? 
-          'Prescription added and ready for dispensing.' :
-          'Prescription added. Payment required before medication can be dispensed.',
-        priceInfo: {
-          medication: medicineItem.name,
-          price: price,
-          priceSource: priceSource,
-          coveredByInsurance: hasInsurance,
-          insuranceProvider: insuranceProviderName || 'Cash'
-        }
+        message: 'Prescription created and sent to pharmacy for quantification.'
       });
     } catch (error) {
       logger.error('Add prescription error:', error);
@@ -440,8 +525,8 @@ router.patch('/:id/payment-status',
   async (req, res) => {
     try {
       const visit = await Visit.findById(req.params.id)
-        .populate('patient')
-        .populate('invoice');
+      .populate('patient')
+      .populate('invoice');
 
       if (!visit) {
         return res.status(404).json({
@@ -498,58 +583,67 @@ router.patch('/:id/payment-status',
 // @desc    Add a diagnosis to a visit
 // @route   POST /api/visits/:id/diagnosis
 router.post('/:id/diagnosis', authorize('admin', 'doctor'), async (req, res) => {
-    try {
-        const visit = await Visit.findById(req.params.id);
-        if (!visit) {
-            return res.status(404).json({ status: 'error', message: 'Visit not found' });
-        }
-
-        const { condition, icd10Code, notes } = req.body;
-
-        const newDiagnosis = {
-            condition,
-            icd10Code,
-            notes,
-            patient: visit.patient._id,
-            diagnosedBy: req.user.id,
-        };
-
-        visit.diagnosis.push(newDiagnosis);
-        await visit.save();
-
-        res.status(201).json({ status: 'success', data: newDiagnosis });
-    } catch (error) {
-        logger.error('Add diagnosis error:', error);
-        res.status(400).json({ status: 'error', message: error.message });
+  try {
+    const visit = await Visit.findById(req.params.id);
+    if (!visit) {
+      return res.status(404).json({ 
+        status: 'error', 
+        message: 'Visit not found' 
+      });
     }
+
+    const { condition, icd10Code, notes } = req.body;
+
+    const newDiagnosis = {
+        condition,
+        icd10Code,
+        notes,
+        patient: visit.patient._id,
+        diagnosedBy: req.user.id,
+    };
+
+    visit.diagnosis.push(newDiagnosis);
+    await visit.save();
+
+    res.status(201).json({ 
+      status: 'success', 
+      data: newDiagnosis 
+    });
+  } catch (error) {
+    logger.error('Add diagnosis error:', error);
+    res.status(400).json({ 
+      status: 'error', 
+      message: error.message 
+    });
+  }
 });
 
 // @desc    End a visit
 // @route   PATCH /api/visits/:id/end-visit
 router.patch('/:id/end-visit', authorize('admin', 'receptionist'), async (req, res) => {
-    try {
-        const visit = await Visit.findById(req.params.id);
-        if (!visit) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Visit not found'
-            });
-        }
-
-        visit.isActive = !visit.isActive;
-        await visit.save();
-
-        res.status(200).json({
-            status: 'success',
-            message: `Visit ended successfully`
-        });
-    } catch (error) {
-        logger.error('Ending visit error', error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Server Error'
-        });
+  try {
+    const visit = await Visit.findById(req.params.id);
+    if (!visit) {
+      return res.status(404).json({
+          status: 'error',
+          message: 'Visit not found'
+      });
     }
+
+    visit.isActive = !visit.isActive;
+    await visit.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: `Visit ended successfully`
+    });
+} catch (error) {
+  logger.error('Ending visit error', error);
+  res.status(500).json({
+    status: 'error',
+    message: 'Server Error'
+  });
+  }
 });
 
 export default router;

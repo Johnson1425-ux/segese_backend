@@ -49,6 +49,11 @@ const wardSchema = new mongoose.Schema({
     type: String,
     enum: ['oxygen', 'ventilator', 'monitor', 'bathroom', 'shower', 'tv', 'wifi', 'air_conditioning', 'heating']
   }],
+  dailyRate: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
   isActive: {
     type: Boolean,
     default: true

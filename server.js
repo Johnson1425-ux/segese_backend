@@ -1,3 +1,4 @@
+
 import 'dotenv/config';
 import 'express-async-errors';
 
@@ -53,6 +54,7 @@ import releaseRoutes from './routes/releases.js';
 
 // Load environment variables
 const NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.TZ = 'Africa/Dar-es-Salaam';
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);

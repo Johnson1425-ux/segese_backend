@@ -46,7 +46,11 @@ router.get('/search', authorize(...viewRoles), async (req, res) => {
 // @access  Private (Doctor only)
 router.get('/my-queue', protect, authorize('doctor'), async (req, res) => {
   try {
-    const queue = await Visit.find({ doctor: req.user.id, status: { $in: ['In Queue', 'In-Progress'] } })
+    const queue = await Visit.find({ 
+      doctor: req.user.id, 
+      status: { $in: ['In Queue', 'In-Progress'] }, 
+      isActive: true
+    })
       .populate('patient', 'firstName lastName')
       .populate('doctor', 'firstName lastName')
       .sort({ visitDate: 1 });

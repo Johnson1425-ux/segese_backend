@@ -117,6 +117,21 @@ const ipdRecordSchema = new mongoose.Schema({
   }],
   medications: [{
     medication: String,
+    medicineId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Medicine'
+    },
+    patient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Patient'
+    },
+    status: {
+      type: String,
+      enum: ['Pending Quantification', 'Quantified', 'Pending Payment', 'Paid', 'Pending', 'Dispensed'],
+    },
+    quantifiedQuantity: Number,
+    quantifiedPrice: Number,
+    totalPrice: Number,
     dosage: String,
     frequency: String,
     startDate: Date,
@@ -184,6 +199,10 @@ const ipdRecordSchema = new mongoose.Schema({
     notes: String
   }],
   billing: {
+    invoice: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Invoice'
+    },
     totalAmount: {
       type: Number,
       default: 0
@@ -195,6 +214,13 @@ const ipdRecordSchema = new mongoose.Schema({
     balance: {
       type: Number,
       default: 0
+    },
+    dailyRoomCharge: {
+      type: Number,
+      default: 0
+    },
+    lastRoomChargeDate: {
+      type: Date
     }
   },
   notes: {

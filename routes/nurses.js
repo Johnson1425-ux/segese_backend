@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(protect);
 
-router.get('/', protect, authorize('admin', 'receptionist'), async (req, res) => {
+router.get('/', protect, authorize('admin', 'doctor', 'receptionist', 'nurse'), async (req, res) => {
     const nurses = await User.find({ role: 'nurse' });
     res.status(200).json({
         status: 'success',
