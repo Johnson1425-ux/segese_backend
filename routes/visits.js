@@ -457,7 +457,7 @@ router.post('/:id/prescriptions',
     try {
       const visit = req.visit;
       const hasInsurance = req.hasInsurance;
-      const { medication, dosage, frequency, duration } = req.body;
+      const { medication, dosage, frequency, duration, type, notes } = req.body;
 
       // Step 1: Check if medication exists in Medicine model (your batch-based system)
       const Medicine = mongoose.model('Medicine');
@@ -467,8 +467,8 @@ router.post('/:id/prescriptions',
         name: { $regex: new RegExp(`^${medication}$`, 'i') }
       });
 
-      if (medicineType) {
-        medicineQuery.type = medicineType;
+      if (type) {
+        medicineQuery.type = type;
       }
 
       const medicineItem = await Medicine.findOne(medicineQuery);
