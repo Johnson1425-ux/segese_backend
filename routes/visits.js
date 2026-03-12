@@ -456,46 +456,51 @@ router.post('/:id/prescriptions',
   async (req, res) => {
     try {
       const visit = req.visit;
-      const hasInsurance = req.hasInsurance;
       const { medication, dosage, frequency, duration, type, notes } = req.body;
 
-      // Step 1: Check if medication exists in Medicine model (your batch-based system)
+      // Step 1: Initialize the Medicine model
       const Medicine = mongoose.model('Medicine');
       
-      // Try to find medicine by exact name or partial match
-      const medicineQuery = await Medicine.findOne({ 
+      // Step 2: Build the search criteria
+      // We search by name (case-insensitive)
+      const searchCriteria = { 
         name: { $regex: new RegExp(`^${medication}$`, 'i') }
-      });
+      };
 
+      // If a specific type (e.g., 'Tablet', 'Syrup') is provided, include it in the search
       if (type) {
-        medicineQuery.type = type;
+        searchCriteria.type = type;
       }
 
-      const medicineItem = await Medicine.findOne(medicineQuery);
+      // Step 3: Perform ONE search to find the medicine item
+      const medicineItem = await Medicine.findOne(searchCriteria);
 
+      // Step 4: Validate if the medicine exists in inventory
       if (!medicineItem) {
         return res.status(404).json({
           status: 'error',
-          message: `Medication "${medication}" not found in inventory.`
+          message: `Medication "${medication}" ${type ? `of type ${type} ` : ''}not found in inventory.`
         });
       }
 
-      // NEW: Prescription goes to pharmacist first with 'Pending Quantification' status
-      // DO NOT add to invoice yet
+      // Step 5: Create the prescription object
+      // We use the official name and ID from the database record (medicineItem)
       const newPrescription = {
         medication: medicineItem.name,
-        medicineId: medicineItem._id, // Store medicine ID for later
+        medicineId: medicineItem._id, 
         dosage,
         frequency,
         duration,
+        notes: notes || '',
         patient: visit.patient._id,
         prescribedBy: req.user.id,
-        status: 'Pending Quantification', // NEW STATUS
-        quantifiedQuantity: null, // Will be set by pharmacist
-        quantifiedPrice: null, // Will be set by pharmacist
+        status: 'Pending Quantification', 
+        quantifiedQuantity: null, 
+        quantifiedPrice: null, 
         sentToPharmacyAt: new Date()
       };
       
+      // Step 6: Update the visit record
       visit.prescriptions.push(newPrescription);
       await visit.save();
 
@@ -509,6 +514,7 @@ router.post('/:id/prescriptions',
         data: newPrescription,
         message: 'Prescription created and sent to pharmacy for quantification.'
       });
+      
     } catch (error) {
       logger.error('Add prescription error:', error);
       res.status(400).json({ 
@@ -645,5 +651,6 @@ router.patch('/:id/end-visit', authorize('admin', 'receptionist'), async (req, r
   });
   }
 });
+
 
 export default router;
