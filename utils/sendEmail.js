@@ -1,111 +1,110 @@
-import sgMail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
 import logger from './logger.js';
 
-// Set SendGrid API key
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  logger.info('✅ SendGrid configured successfully');
-} else {
-  logger.warn('⚠️ SENDGRID_API_KEY not found - emails will fail!');
-}
+// Create SMTP transporter
+let transporter = null;
+
+const createTransporter = () => {
+  const requiredVars = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USERNAME', 'SMTP_PASSWORD'];
+  const missing = requiredVars.filter(v => !process.env[v]);
+
+  if (missing.length > 0) {
+    logger.warn(`⚠️ Missing SMTP env vars: ${missing.join(', ')} - emails will fail!`);
+    return null;
+  }
+
+  const transport = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT, 10),
+    secure: process.env.SMTP_SECURE === 'true', // true for port 465, false for 587
+    auth: {
+      user: process.env.SMTP_USERNAME,
+      pass: process.env.SMTP_PASSWORD,
+    },
+    ...(process.env.SMTP_TLS_REJECT_UNAUTHORIZED === 'false' && {
+      tls: { rejectUnauthorized: false }
+    }),
+  });
+
+  logger.info('✅ SMTP transporter configured successfully');
+  return transport;
+};
+
+transporter = createTransporter();
 
 const sendEmail = async (options) => {
   try {
-    console.log('📧 Attempting to send email via SendGrid...');
+    console.log('📧 Attempting to send email via SMTP...');
     console.log('Recipient:', options.email);
     console.log('Subject:', options.subject);
 
     // Validate required fields
-    if (!options.email) {
-      throw new Error('Recipient email is required');
-    }
-    if (!options.subject) {
-      throw new Error('Email subject is required');
-    }
-    if (!options.html && !options.message) {
-      throw new Error('Email content (html or message) is required');
-    }
+    if (!options.email) throw new Error('Recipient email is required');
+    if (!options.subject) throw new Error('Email subject is required');
+    if (!options.html && !options.message) throw new Error('Email content (html or message) is required');
+    if (!process.env.FROM_EMAIL) throw new Error('FROM_EMAIL is not configured in environment variables');
 
-    // Validate SendGrid is configured
-    if (!process.env.SENDGRID_API_KEY) {
-      throw new Error('SENDGRID_API_KEY is not configured in environment variables');
-    }
-
-    if (!process.env.FROM_EMAIL) {
-      throw new Error('FROM_EMAIL is not configured in environment variables');
+    // Re-create transporter if not initialized
+    if (!transporter) {
+      transporter = createTransporter();
+      if (!transporter) throw new Error('SMTP is not configured. Check SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD.');
     }
 
     // Prepare email message
     const msg = {
       to: options.email,
-      from: {
-        email: process.env.FROM_EMAIL,
-        name: process.env.FROM_NAME || 'Segese Medical Clinic'
-      },
+      from: `"${process.env.FROM_NAME || 'Segese Medical Clinic'}" <${process.env.FROM_EMAIL}>`,
       subject: options.subject,
       text: options.message || '',
       html: options.html || (options.message ? options.message.replace(/\n/g, '<br>') : ''),
+      ...(options.replyTo && { replyTo: options.replyTo }),
     };
 
-    // Add reply-to if provided
-    if (options.replyTo) {
-      msg.replyTo = options.replyTo;
-    }
+    console.log('📤 Sending email from:', process.env.FROM_EMAIL);
 
-    console.log('📤 Sending email from:', msg.from.email);
+    const response = await transporter.sendMail(msg);
 
-    // Send email via SendGrid
-    const response = await sgMail.send(msg);
-    
-    console.log('✅ Email sent successfully via SendGrid');
-    console.log('Status Code:', response[0].statusCode);
-    
-    logger.info('Email sent successfully via SendGrid', {
+    console.log('✅ Email sent successfully via SMTP');
+    console.log('Message ID:', response.messageId);
+
+    logger.info('Email sent successfully via SMTP', {
       recipient: options.email,
       subject: options.subject,
-      statusCode: response[0].statusCode,
-      messageId: response[0].headers['x-message-id']
+      messageId: response.messageId,
     });
 
     return {
       success: true,
-      messageId: response[0].headers['x-message-id'],
-      statusCode: response[0].statusCode,
-      provider: 'sendgrid'
+      messageId: response.messageId,
+      provider: 'smtp',
     };
-
   } catch (error) {
-    console.error('❌ SendGrid email error:', error);
-    
-    // Log detailed error information
-    logger.error('SendGrid email error:', {
+    console.error('❌ SMTP email error:', error);
+
+    logger.error('SMTP email error:', {
       error: error.message,
       code: error.code,
-      statusCode: error.response?.statusCode,
-      body: error.response?.body,
       recipient: options?.email,
       subject: options?.subject,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
-    
-    // Provide user-friendly error messages
+
     let errorMessage = 'Failed to send email';
-    
-    if (error.code === 401 || error.response?.statusCode === 401) {
-      errorMessage = 'SendGrid authentication failed. Check your API key.';
-    } else if (error.code === 403 || error.response?.statusCode === 403) {
-      errorMessage = 'SendGrid access forbidden. Verify sender email address and API key permissions.';
-    } else if (error.response?.body?.errors) {
-      const errorMessages = error.response.body.errors.map(e => e.message).join(', ');
-      errorMessage = `SendGrid error: ${errorMessages}`;
-    } else if (error.message.includes('API key')) {
-      errorMessage = 'SendGrid API key not configured. Add SENDGRID_API_KEY to environment variables.';
+
+    if (error.code === 'ECONNREFUSED') {
+      errorMessage = `SMTP connection refused. Check SMTP_HOST (${process.env.SMTP_HOST}) and SMTP_PORT (${process.env.SMTP_PORT}).`;
+    } else if (error.code === 'EAUTH') {
+      errorMessage = 'SMTP authentication failed. Check SMTP_USERNAME and SMTP_PASSWORD.';
+    } else if (error.code === 'ESOCKET' || error.code === 'ETIMEDOUT') {
+      errorMessage = 'SMTP connection timed out. Check your host and port settings.';
     } else if (error.message.includes('FROM_EMAIL')) {
-      errorMessage = 'FROM_EMAIL not configured. Add verified sender email to environment variables.';
+      errorMessage = 'FROM_EMAIL not configured. Add a sender email to environment variables.';
+    } else if (error.message.includes('SMTP is not configured')) {
+      errorMessage = error.message;
     } else {
       errorMessage = `Failed to send email: ${error.message}`;
     }
-    
+
     throw new Error(errorMessage);
   }
 };
