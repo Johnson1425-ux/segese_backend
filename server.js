@@ -112,9 +112,7 @@ app.use(hpp());
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5000',
-  'https://localhost:3000',
-  'https://localhost:5000',
-  'http://192.168.43.25:3000',
+  'http://192.168.43.25:3000'
 ];
 
 // Add FRONTEND_URL from env if it exists
