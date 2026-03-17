@@ -1,13 +1,13 @@
-import express from ‘express’;
-import mongoose from ‘mongoose’;
-import Visit from ‘../models/Visit.js’;
-import Patient from ‘../models/Patient.js’;
-import Service from ‘../models/Service.js’;
-import Invoice from ‘../models/Invoice.js’;
-import { protect, authorize } from ‘../middleware/auth.js’;
-import { checkPaymentEligibility } from ‘../middleware/paymentEligibility.js’;
-import billingService from ‘../services/billingService.js’;
-import logger from ‘../utils/logger.js’;
+import express from 'express';
+import mongoose from 'mongoose';
+import Visit from '../models/Visit.js';
+import Patient from '../models/Patient.js';
+import Service from '../models/Service.js';
+import Invoice from '../models/Invoice.js';
+import { protect, authorize } from '../middleware/auth.js';
+import { checkPaymentEligibility } from '../middleware/paymentEligibility.js';
+import billingService from '../services/billingService.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 router.use(protect);
@@ -17,11 +17,10 @@ router.use(protect);
 // @query   isActive=all  → returns all visits (active + ended), used by reports
 //          isActive=true → (default) returns only active visits
 //          search        → filter by patient name
-router.get(’/’, authorize(‘admin’, ‘doctor’, ‘receptionist’), async (req, res) => {
+router.get('/', authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
 try {
 const { search, isActive, startDate, endDate, page, limit } = req.query;
 
-```
   // Default behaviour: only active visits (preserves existing frontend usage)
   // Reports pass ?isActive=all to get the full historical dataset
   const query = {};
@@ -84,17 +83,15 @@ const { search, isActive, startDate, endDate, page, limit } = req.query;
     message: 'Server Error'
   });
 }
-```
 
 });
 
 // @desc    Get a single visit by ID
 // @route   GET /api/visits/:id
-router.get(’/:id’, authorize(‘admin’, ‘doctor’, ‘receptionist’), async (req, res) => {
+router.get('/:id', authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
 try {
-const User = mongoose.model(‘User’);
+const User = mongoose.model('User');
 
-```
   const visit = await Visit.findById(req.params.id)
     .populate('patient')
     .populate('doctor')
@@ -202,18 +199,16 @@ const User = mongoose.model(‘User’);
     message: 'Server Error' 
   });
 }
-```
 
 });
 
 // @desc    Create a new visit with invoice (CENTRALIZED)
 // @route   POST /api/visits
 // @access  Private (Admin, Receptionist)
-router.post(’/’, authorize(‘admin’, ‘receptionist’), async (req, res) => {
+router.post('/', authorize('admin', 'receptionist'), async (req, res) => {
 try {
 const { patientId, doctorId, visitDate, reason, type } = req.body;
 
-```
 // Check for active visit
 const activeVisit = await Visit.findOne({ 
   patient: patientId, 
@@ -289,12 +284,11 @@ res.status(201).json({
     'Visit created. Consultation fee covered by insurance.' :
     'Visit created. Payment required before services can be ordered.'
 });
-```
 
 } catch (error) {
-logger.error(‘Create visit error:’, error);
+logger.error('Create visit error:', error);
 res.status(400).json({
-status: ‘error’,
+status: 'error',
 message: error.message
 });
 }
@@ -303,12 +297,11 @@ message: error.message
 // @desc    Add vital signs to visit
 // @route   POST /api/visits/:id/vitals
 // @access  Private (Nurse, Doctor, Receptionist)
-router.post(’/:id/vitals’, authorize(‘admin’, ‘nurse’, ‘doctor’, ‘receptionist’),checkPaymentEligibility, async (req, res) => {
+router.post('/:id/vitals', authorize('admin', 'nurse', 'doctor', 'receptionist'),checkPaymentEligibility, async (req, res) => {
 try {
 const visit = req.visit;
 const { temperature, bloodPressure, heartRate, oxygenSaturation } = req.body;
 
-```
 const newVitalsData = {
   temperature,
   bloodPressure,
@@ -331,21 +324,20 @@ res.status(201).json({
   message: 'Vital signs recorded successfully',
   data: newVitalsData
 });
-```
 
 } catch (error) {
-logger.error(‘Add vital signs error:’, error);
+logger.error('Add vital signs error:', error);
 res.status(500).json({
-status: ‘error’,
-message: ‘Server error’
+status: 'error',
+message: 'Server error'
 });
 }
 });
 
 // @desc    Add lab order to invoice (CENTRALIZED)
 // @route   POST /api/visits/:id/lab-orders
-router.post(’/:id/lab-orders’,
-authorize(‘admin’, ‘doctor’),
+router.post('/:id/lab-orders',
+authorize('admin', 'doctor'),
 checkPaymentEligibility,
 async (req, res) => {
 try {
@@ -353,7 +345,6 @@ const visit = req.visit;
 const hasInsurance = req.hasInsurance;
 const { testName, notes } = req.body;
 
-```
   // Look up service
   const service = await Service.findOne({ 
     name: testName,
@@ -412,14 +403,13 @@ const { testName, notes } = req.body;
     message: error.message 
   });
 }
-```
 
 });
 
 // @desc    Add radiology order to invoice (CENTRALIZED)
 // @route   POST /api/visits/:id/radiology-orders
-router.post(’/:id/radiology-orders’,
-authorize(‘admin’, ‘doctor’),
+router.post('/:id/radiology-orders',
+authorize('admin', 'doctor'),
 checkPaymentEligibility,
 async (req, res) => {
 try {
@@ -428,7 +418,6 @@ const hasInsurance = req.hasInsurance;
 const { orderData } = req.body;
 const { scanType, bodyPart, reason } = orderData;
 
-```
   // Look up service
   const service = await Service.findOne({ 
     name: scanType,
@@ -493,21 +482,19 @@ const { scanType, bodyPart, reason } = orderData;
     message: error.message 
   });
 }
-```
 
 });
 
 // @desc    Add prescription (NEW WORKFLOW - goes to pharmacist first, NOT added to invoice yet)
 // @route   POST /api/visits/:id/prescriptions
-router.post(’/:id/prescriptions’,
-authorize(‘admin’, ‘doctor’),
+router.post('/:id/prescriptions',
+authorize('admin', 'doctor'),
 checkPaymentEligibility,
 async (req, res) => {
 try {
 const visit = req.visit;
 const { medication, dosage, frequency, duration, type, notes } = req.body;
 
-```
   // Step 1: Initialize the Medicine model
   const Medicine = mongoose.model('Medicine');
   
@@ -572,21 +559,19 @@ const { medication, dosage, frequency, duration, type, notes } = req.body;
     message: error.message 
   });
 }
-```
 
 });
 
 // @desc    Update payment status (consultation fee paid)
 // @route   PATCH /api/visits/:id/payment-status
-router.patch(’/:id/payment-status’,
-authorize(‘admin’, ‘receptionist’),
+router.patch('/:id/payment-status',
+authorize('admin', 'receptionist'),
 async (req, res) => {
 try {
 const visit = await Visit.findById(req.params.id)
-.populate(‘patient’)
-.populate(‘invoice’);
+.populate('patient')
+.populate('invoice');
 
-```
   if (!visit) {
     return res.status(404).json({
       status: 'error',
@@ -637,23 +622,21 @@ const visit = await Visit.findById(req.params.id)
     message: 'Server Error'
   });
 }
-```
 
 });
 
 // @desc    Add a diagnosis to a visit
 // @route   POST /api/visits/:id/diagnosis
-router.post(’/:id/diagnosis’, authorize(‘admin’, ‘doctor’), async (req, res) => {
+router.post('/:id/diagnosis', authorize('admin', 'doctor'), async (req, res) => {
 try {
 const visit = await Visit.findById(req.params.id);
 if (!visit) {
 return res.status(404).json({
-status: ‘error’,
-message: ‘Visit not found’
+status: 'error',
+message: 'Visit not found'
 });
 }
 
-```
 const { condition, icd10Code, notes } = req.body;
 
 const newDiagnosis = {
@@ -671,12 +654,11 @@ res.status(201).json({
   status: 'success', 
   data: newDiagnosis 
 });
-```
 
 } catch (error) {
-logger.error(‘Add diagnosis error:’, error);
+logger.error('Add diagnosis error:', error);
 res.status(400).json({
-status: ‘error’,
+status: 'error',
 message: error.message
 });
 }
@@ -684,17 +666,16 @@ message: error.message
 
 // @desc    End a visit
 // @route   PATCH /api/visits/:id/end-visit
-router.patch(’/:id/end-visit’, authorize(‘admin’, ‘receptionist’), async (req, res) => {
+router.patch('/:id/end-visit', authorize('admin', 'receptionist'), async (req, res) => {
 try {
 const visit = await Visit.findById(req.params.id);
 if (!visit) {
 return res.status(404).json({
-status: ‘error’,
-message: ‘Visit not found’
+status: 'error',
+message: 'Visit not found'
 });
 }
 
-```
 visit.isActive = !visit.isActive;
 await visit.save();
 
@@ -702,13 +683,12 @@ res.status(200).json({
   status: 'success',
   message: `Visit ended successfully`
 });
-```
 
 } catch (error) {
-logger.error(‘Ending visit error’, error);
+logger.error('Ending visit error', error);
 res.status(500).json({
-status: ‘error’,
-message: ‘Server Error’
+status: 'error',
+message: 'Server Error'
 });
 }
 });
