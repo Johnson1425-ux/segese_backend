@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
 import sendEmail from '../utils/sendEmail.js';
+import { use } from 'react';
 
 const router = express.Router();
 
@@ -88,7 +89,10 @@ router.get('/verify-email/:token', async (req, res) => {
       .update(req.params.token)
       .digest('hex');
 
-    const user = await User.findOne({ verificationToken });
+    const user = await User.findOne({ 
+      verificationToken,
+      verificationTokenExpire: { $gt: Date.now() }
+    });
 
     if (!user) {
       return res.status(400).json({ 
@@ -97,8 +101,9 @@ router.get('/verify-email/:token', async (req, res) => {
       });
     }
 
-    user.isVerified = true;
+    user.isEmailVerified = true;
     user.verificationToken = undefined;
+    user.verificationTokenExpire = undefined;
     await user.save();
 
     res.status(200).json({ 
@@ -131,12 +136,12 @@ router.post('/login', async (req, res) => {
     }
 
     // Check if user is verified
-    // if (!user.isVerified) {
-    //   return res.status(401).json({
-    //     success: false,
-    //     message: 'Please verify your email before logging in'
-    //   });
-    // }
+    if (!user.isEmailVerified) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please verify your email before logging in'
+      });
+    }
 
     // Check if user is active
     if (!user.isActive) {

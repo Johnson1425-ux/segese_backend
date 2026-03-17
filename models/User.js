@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { type } from 'os';
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME = 15 * 60 * 1000; // 15 minutes
@@ -77,6 +76,7 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   verificationToken: String,
+  verificationTokenExpire: Date,
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   failedLoginAttempts: {
@@ -153,6 +153,8 @@ userSchema.methods.getVerificationToken = function() {
     .update(verificationToken)
     .digest('hex');
     
+  this.verificationTokenExpire = Date.now() + 24 * 60 * 60 * 1000;
+  
   return verificationToken;
 };
 
