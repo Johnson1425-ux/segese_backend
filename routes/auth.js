@@ -3,7 +3,6 @@ import crypto from 'crypto';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
 import sendEmail from '../utils/sendEmail.js';
-import { use } from 'react';
 
 const router = express.Router();
 
@@ -55,7 +54,7 @@ router.post('/register', async (req, res) => {
         message,
       });
       
-      res.status(200).json({ 
+      res.status(201).json({ 
         success: true, 
         data: 'User registered successfully. Verification email sent' 
       });
