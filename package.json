@@ -37,6 +37,7 @@
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.13",
+    "resend": "^4.0.0",
     "superagent": "^10.3.0",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
