@@ -297,19 +297,20 @@ message: error.message
 // @desc    Add vital signs to visit
 // @route   POST /api/visits/:id/vitals
 // @access  Private (Nurse, Doctor, Receptionist)
-router.post('/:id/vitals', authorize('admin', 'nurse', 'doctor', 'receptionist'),checkPaymentEligibility, async (req, res) => {
+router.post('/:id/vitals', authorize('admin', 'nurse', 'doctor', 'receptionist'), checkPaymentEligibility, async (req, res) => {
 try {
 const visit = req.visit;
-const { temperature, bloodPressure, heartRate, oxygenSaturation } = req.body;
+const { temperature, bloodPressure, heartRate, oxygenSaturation, weight } = req.body;
 
 const newVitalsData = {
   temperature,
   bloodPressure,
   heartRate,
   oxygenSaturation,
+  weight,
   patient: visit.patient._id,
   recordedBy: req.user.id,
-  recordedAt: new Date() // Explicitly set the recording time
+  recordedAt: new Date()
 };
 
 if (!visit.vitalSigns) {

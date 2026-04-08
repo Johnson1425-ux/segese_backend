@@ -6,6 +6,7 @@ const vitalSignsSchema = new mongoose.Schema({
   bloodPressure: { type: String, required: true },
   heartRate: { type: Number, required: true },
   oxygenSaturation: { type: Number, required: true },
+  weight: { type: Number },
   patient: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
   recordedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   recordedAt: { type: Date, default: Date.now }
