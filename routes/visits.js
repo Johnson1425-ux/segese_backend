@@ -86,6 +86,45 @@ const { search, isActive, startDate, endDate, page, limit } = req.query;
 
 });
 
+// @desc    Get all active visits with pending injections
+// @route   GET /api/visits/injections/pending
+// @access  Private (Nurse, Doctor, Admin)
+router.get('/injections/pending',
+authorize('admin', 'nurse', 'doctor'),
+async (req, res) => {
+try {
+  const visits = await Visit.find({
+    isActive: true,
+    prescriptions: {
+      $elemMatch: {
+        type: 'Injection',
+        status: { $nin: ['Pending Quantification', 'Pending Payment', 'Completed'] }
+      }
+    }
+  })
+  .populate('patient', 'firstName lastName')
+  .populate('doctor', 'firstName lastName')
+  .select('patient doctor visitId prescriptions visitDate');
+
+  const data = visits.map(v => ({
+    _id: v._id,
+    visitId: v.visitId,
+    visitDate: v.visitDate,
+    patient: v.patient,
+    doctor: v.doctor,
+    injections: v.prescriptions.filter(p =>
+      p.type === 'Injection' &&
+      !['Pending Quantification', 'Pending Payment', 'Completed'].includes(p.status)
+    )
+  }));
+
+  res.status(200).json({ status: 'success', data });
+} catch (error) {
+  logger.error('Get pending injections error:', error);
+  res.status(500).json({ status: 'error', message: 'Server Error' });
+}
+});
+
 // @desc    Get a single visit by ID
 // @route   GET /api/visits/:id
 router.get('/:id', authorize('admin', 'doctor', 'receptionist'), async (req, res) => {
@@ -693,6 +732,85 @@ res.status(500).json({
 status: 'error',
 message: 'Server Error'
 });
+}
+});
+// @desc    Administer an injection (nurse/doctor records a dose)
+// @route   PATCH /api/visits/:id/prescriptions/:prescriptionId/administer
+// @access  Private (Nurse, Doctor, Admin)
+router.patch('/:id/prescriptions/:prescriptionId/administer',
+authorize('admin', 'nurse', 'doctor'),
+async (req, res) => {
+try {
+  const visit = await Visit.findById(req.params.id);
+  if (!visit) {
+    return res.status(404).json({ status: 'error', message: 'Visit not found' });
+  }
+
+  const prescription = visit.prescriptions.id(req.params.prescriptionId);
+  if (!prescription) {
+    return res.status(404).json({ status: 'error', message: 'Prescription not found' });
+  }
+
+  if (prescription.type !== 'Injection') {
+    return res.status(400).json({ status: 'error', message: 'This prescription is not an injection' });
+  }
+
+  if (prescription.status === 'Completed') {
+    return res.status(400).json({ status: 'error', message: 'All doses have already been administered' });
+  }
+
+  // Initialize remainingDoses on first administration
+  if (prescription.remainingDoses === null || prescription.remainingDoses === undefined) {
+    prescription.remainingDoses = prescription.quantifiedQuantity;
+  }
+
+  if (prescription.remainingDoses <= 0) {
+    return res.status(400).json({ status: 'error', message: 'No remaining doses' });
+  }
+
+  // Record the administration
+  if (!prescription.administrations) {
+    prescription.administrations = [];
+  }
+
+  prescription.administrations.push({
+    administeredBy: req.user.id,
+    administeredAt: new Date(),
+    notes: req.body.notes || ''
+  });
+
+  // Decrement remaining doses
+  prescription.remainingDoses -= 1;
+
+  // Mark as completed if no doses left
+  if (prescription.remainingDoses === 0) {
+    prescription.status = 'Completed';
+  }
+
+  await visit.save();
+
+  logger.info(
+    `Injection "${prescription.medication}" administered for visit ${visit.visitId}. ` +
+    `Remaining doses: ${prescription.remainingDoses}`
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: prescription.remainingDoses === 0
+      ? 'Final dose administered. Prescription completed.'
+      : `Dose recorded. ${prescription.remainingDoses} dose(s) remaining.`,
+    data: {
+      prescriptionId: prescription._id,
+      medication: prescription.medication,
+      remainingDoses: prescription.remainingDoses,
+      status: prescription.status,
+      administrations: prescription.administrations
+    }
+  });
+
+} catch (error) {
+  logger.error('Administer injection error:', error);
+  res.status(500).json({ status: 'error', message: error.message });
 }
 });
 
