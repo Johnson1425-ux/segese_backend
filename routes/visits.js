@@ -498,11 +498,13 @@ const { medication, dosage, frequency, duration, type, notes } = req.body;
 
   // Step 1: Initialize the Medicine model
   const Medicine = mongoose.model('Medicine');
+
+  const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   
   // Step 2: Build the search criteria
   // We search by name (case-insensitive)
   const searchCriteria = { 
-    name: { $regex: new RegExp(`^${medication}$`, 'i') }
+    name: { $regex: new RegExp(`^${escapeRegex(medication)}$`, 'i') }
   };
 
   // If a specific type (e.g., 'Tablet', 'Syrup') is provided, include it in the search
