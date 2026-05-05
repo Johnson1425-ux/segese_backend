@@ -66,6 +66,14 @@ const prescriptionSchema = new mongoose.Schema({
   quantifiedAt: Date,
   sentToPharmacyAt: Date,
   sentToBillingAt: Date,
+  remainingDoses: { type: Number, default: null },
+  administrations: [
+    {
+      administeredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      administeredAt: { type: Date, default: Date.now },
+      notes: { type: String, default: '' }
+    }
+  ],
   createdAt: { type: Date, default: Date.now },
   isActive: { type: Boolean, default: true }
 });
