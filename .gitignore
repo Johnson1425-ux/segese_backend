@@ -1,2 +1,19 @@
 node_modules/
+
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Runtime logs (may contain patient data — never commit)
+logs/
+*.log
+
+# Uploaded files
+uploads/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

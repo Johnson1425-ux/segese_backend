@@ -5,11 +5,20 @@ import {
   updateItemPrice,
   deleteItemPrice,
 } from '../controllers/itemPricingController.js';
+import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.route('/').get(getItemPrices).post(createItemPrice);
+router.use(protect);
 
-router.route('/:id').put(updateItemPrice).delete(deleteItemPrice);
+router
+  .route('/')
+  .get(authorize('admin', 'pharmacist', 'receptionist'), getItemPrices)
+  .post(authorize('admin', 'pharmacist'), createItemPrice);
+
+router
+  .route('/:id')
+  .put(authorize('admin', 'pharmacist'), updateItemPrice)
+  .delete(authorize('admin'), deleteItemPrice);
 
 export default router;

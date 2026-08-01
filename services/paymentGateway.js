@@ -1,10 +1,22 @@
 import Stripe from 'stripe';
 import logger from '../utils/logger.js';
 
-// Initialize Stripe with your secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_your_test_key', {
-  apiVersion: '2023-10-16',
-});
+// Stripe is initialized lazily so that importing this module does not require
+// STRIPE_SECRET_KEY to be set. A placeholder key would build a client that
+// fails on every call with an opaque auth error, so fail loudly instead.
+let stripeClient;
+
+const getStripe = () => {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not configured');
+    }
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2023-10-16',
+    });
+  }
+  return stripeClient;
+};
 
 class PaymentGatewayService {
   /**
@@ -12,7 +24,7 @@ class PaymentGatewayService {
    */
   async createPaymentIntent(amount, currency = 'usd', metadata = {}) {
     try {
-      const paymentIntent = await stripe.paymentIntents.create({
+      const paymentIntent = await getStripe().paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency,
         automatic_payment_methods: {
@@ -44,7 +56,7 @@ class PaymentGatewayService {
    */
   async confirmPayment(paymentIntentId) {
     try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
       
       if (paymentIntent.status === 'succeeded') {
         return {
@@ -86,7 +98,7 @@ class PaymentGatewayService {
         refundData.amount = Math.round(amount * 100); // Partial refund
       }
 
-      const refund = await stripe.refunds.create(refundData);
+      const refund = await getStripe().refunds.create(refundData);
 
       return {
         success: true,
@@ -110,7 +122,7 @@ class PaymentGatewayService {
    */
   async createCustomer(customerData) {
     try {
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email: customerData.email,
         name: `${customerData.firstName} ${customerData.lastName}`,
         phone: customerData.phone,
@@ -137,7 +149,7 @@ class PaymentGatewayService {
    */
   async createSubscription(customerId, priceId, metadata = {}) {
     try {
-      const subscription = await stripe.subscriptions.create({
+      const subscription = await getStripe().subscriptions.create({
         customer: customerId,
         items: [{ price: priceId }],
         payment_behavior: 'default_incomplete',
@@ -165,7 +177,7 @@ class PaymentGatewayService {
    */
   async cancelSubscription(subscriptionId) {
     try {
-      const subscription = await stripe.subscriptions.cancel(subscriptionId);
+      const subscription = await getStripe().subscriptions.cancel(subscriptionId);
 
       return {
         success: true,
@@ -187,7 +199,7 @@ class PaymentGatewayService {
    */
   async createPaymentLink(invoiceData) {
     try {
-      const paymentLink = await stripe.paymentLinks.create({
+      const paymentLink = await getStripe().paymentLinks.create({
         line_items: invoiceData.items.map(item => ({
           price_data: {
             currency: 'usd',
@@ -230,7 +242,7 @@ class PaymentGatewayService {
    */
   verifyWebhookSignature(payload, signature) {
     try {
-      const event = stripe.webhooks.constructEvent(
+      const event = getStripe().webhooks.constructEvent(
         payload,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET

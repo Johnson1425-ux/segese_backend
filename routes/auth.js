@@ -1,15 +1,32 @@
 import express from 'express';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import rateLimit from 'express-rate-limit';
 import User from '../models/User.js';
-import { protect } from '../middleware/auth.js';
+import { protect, authRateLimit } from '../middleware/auth.js';
 import sendEmail from '../utils/sendEmail.js';
+import logger from '../utils/logger.js';
+import { validatePassword, PASSWORD_REQUIREMENTS_MESSAGE } from '../utils/passwordPolicy.js';
 
 const router = express.Router();
+
+// Credential-guessing protection. The global limiter in server.js allows ~100
+// requests per window, which is far too generous for password attempts.
+const authLimiter = rateLimit(authRateLimit);
+
+// Generic reply used by every account-lookup flow so that a caller cannot tell
+// a registered address from an unregistered one.
+const GENERIC_RESET_RESPONSE =
+  'If an account exists for that email address, a password reset link has been sent.';
+
+// Compared against when no user matches, to keep the failure path's timing
+// close to the real one.
+const DUMMY_HASH = bcrypt.hashSync('unused-placeholder-value', 10);
 
 // @desc    Register user and send verification email
 // @route   POST /api/auth/register
 // @access  Public
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
@@ -18,6 +35,15 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'All fields are required'
+      });
+    }
+
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({
+        success: false,
+        message: passwordCheck.message,
+        errors: [{ field: 'password', message: passwordCheck.message }]
       });
     }
 
@@ -69,7 +95,7 @@ router.post('/register', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Register error:', error);
+    logger.error('Register error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'
@@ -110,7 +136,7 @@ router.get('/verify-email/:token', async (req, res) => {
       data: 'Email verified successfully' 
     });
   } catch (error) {
-    console.error('Verify email error:', error);
+    logger.error('Verify email error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'
@@ -120,7 +146,7 @@ router.get('/verify-email/:token', async (req, res) => {
 
 // @desc    Login user
 // @route   POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -131,54 +157,68 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
+      // Burn a comparable amount of time so response latency does not reveal
+      // whether the address is registered.
+      await bcrypt.compare(password, DUMMY_HASH);
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Check if user is verified
-    if (!user.isEmailVerified) {
-      return res.status(401).json({
-        success: false,
-        message: 'Please verify your email before logging in'
-      });
-    }
-
-    // Check if user is active
-    if (!user.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: 'Account has been deactivated. Please contact support.'
-      });
-    }
-    
+    // Checked before the password comparison so that a locked account cannot
+    // be used as an unlimited guessing oracle.
     if (user.isLocked()) {
-        return res.status(423).json({ success: false, message: 'Account is temporarily locked. Please try again later.' });
+      return res.status(423).json({
+        success: false,
+        message: 'Account is temporarily locked. Please try again later.'
+      });
     }
 
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
       await user.incrementFailedLoginAttempts();
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid credentials' 
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
       });
     }
-    
+
+    // Account-state messages are only disclosed once the password has been
+    // proven, so they cannot be used to enumerate accounts.
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Please verify your email before logging in'
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'Account has been deactivated. Please contact support.'
+      });
+    }
+
     await user.resetLoginAttempts();
+
+    // Recorded here rather than in the protect middleware, which would other-
+    // wise write to the database on every authenticated request.
+    user.lastLogin = new Date();
+    await user.save({ validateBeforeSave: false });
 
     const token = user.getSignedJwtToken();
     const userResponse = { ...user._doc };
     delete userResponse.password;
-    
-    res.status(200).json({ 
-      success: true, 
-      data: { user: userResponse, token } 
+
+    res.status(200).json({
+      success: true,
+      data: { user: userResponse, token }
     });
 
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server Error' 
+    logger.error('Login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error'
     });
   }
 });
@@ -186,14 +226,17 @@ router.post('/login', async (req, res) => {
 // @desc    Forgot password
 // @route   POST /api/auth/forgot-password
 // @access  Public
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', authLimiter, async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
 
+    // Always answer as though the address was accepted; revealing that no
+    // account exists lets an attacker enumerate valid staff addresses.
     if (!user) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'There is no user with that email' 
+      logger.info(`Password reset requested for unknown address: ${req.body.email}`);
+      return res.status(200).json({
+        success: true,
+        data: GENERIC_RESET_RESPONSE
       });
     }
 
@@ -209,21 +252,28 @@ router.post('/forgot-password', async (req, res) => {
         subject: 'Password Reset', 
         message 
       });
-      res.status(200).json({ 
-        success: true, 
-        data: 'Reset email sent' 
+      res.status(200).json({
+        success: true,
+        data: GENERIC_RESET_RESPONSE
       });
     } catch (err) {
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save({ validateBeforeSave: false });
-      res.status(500).json({ 
-        success: false, 
-        message: 'Email could not be sent' 
+
+      // Same response as the success path: a delivery failure must not confirm
+      // that the address is registered. The cause is recorded server-side.
+      logger.error('Password reset email could not be sent', {
+        recipient: user.email,
+        error: err.message
+      });
+      res.status(200).json({
+        success: true,
+        data: GENERIC_RESET_RESPONSE
       });
     }
   } catch (error) {
-    console.error('Forgot password error:', error);
+    logger.error('Forgot password error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'
@@ -234,7 +284,7 @@ router.post('/forgot-password', async (req, res) => {
 // @desc    Reset password
 // @route   PUT /api/auth/reset-password/:token
 // @access  Public
-router.put('/reset-password/:token', async (req, res) => {
+router.put('/reset-password/:token', authLimiter, async (req, res) => {
   try {
     const resetPasswordToken = crypto
       .createHash('sha256')
@@ -253,17 +303,28 @@ router.put('/reset-password/:token', async (req, res) => {
       });
     }
 
+    const passwordCheck = validatePassword(req.body.password);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({
+        success: false,
+        message: passwordCheck.message,
+        errors: [{ field: 'password', message: passwordCheck.message }]
+      });
+    }
+
     user.password = req.body.password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
+    user.failedLoginAttempts = 0;
+    user.lockUntil = null;
     await user.save();
 
-    res.status(200).json({ 
-      success: true, 
-      data: 'Password reset successfully' 
+    res.status(200).json({
+      success: true,
+      data: 'Password reset successfully'
     });
   } catch (error) {
-    console.error('Reset password error:', error);
+    logger.error('Reset password error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'
@@ -312,26 +373,14 @@ router.put('/change-password', protect, async (req, res) => {
     }
 
     // Password strength validation
-    if (newPassword.length < 8) {
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.valid) {
       return res.status(400).json({
         success: false,
-        message: 'New password must be at least 8 characters',
+        message: PASSWORD_REQUIREMENTS_MESSAGE,
         errors: [{
           field: 'newPassword',
-          message: 'New password must be at least 8 characters'
-        }]
-      });
-    }
-
-    // Check password complexity
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
-    if (!passwordRegex.test(newPassword)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-        errors: [{
-          field: 'newPassword',
-          message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+          message: PASSWORD_REQUIREMENTS_MESSAGE
         }]
       });
     }
@@ -389,14 +438,14 @@ router.put('/change-password', protect, async (req, res) => {
     user.password = newPassword;
     await user.save();
 
-    console.log(`Password changed successfully for user: ${user.email}`);
+    logger.info('Password changed', { userId: user._id });
 
     res.status(200).json({
       success: true,
       message: 'Password changed successfully'
     });
   } catch (error) {
-    console.error('Change password error:', error);
+    logger.error('Change password error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'

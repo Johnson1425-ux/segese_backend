@@ -53,10 +53,6 @@ export const protect = async (req, res, next) => {
       });
     }
 
-    // Update last login
-    user.lastLogin = new Date();
-    await user.save();
-
     req.user = user;
     next();
   } catch (error) {
