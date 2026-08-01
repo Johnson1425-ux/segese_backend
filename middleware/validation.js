@@ -1,12 +1,13 @@
-import { validationResult } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 
 // Middleware to handle validation errors
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const extractedErrors = [];
-    errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
-    
+    // express-validator v7 renamed `param` to `path`; using the old name
+    // produced error objects keyed by the literal string "undefined".
+    const extractedErrors = errors.array().map(err => ({ [err.path]: err.msg }));
+
     return res.status(422).json({
       status: 'error',
       message: 'Validation failed',
@@ -93,9 +94,6 @@ export const sanitizeInput = (req, res, next) => {
   
   next();
 };
-
-// Create validation middleware file: middleware/validation.js
-import { body, validationResult } from 'express-validator';
 
 export const validateCorpseRegistration = [
   body('firstName').trim().notEmpty().withMessage('First name is required'),

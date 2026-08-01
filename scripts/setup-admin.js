@@ -1,12 +1,43 @@
-const mongoose = require('mongoose');
-const User = require('../models/User');
-const logger = require('../utils/logger');
-require('dotenv').config();
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import User from '../models/User.js';
+import logger from '../utils/logger.js';
+import { validatePassword, PASSWORD_REQUIREMENTS_MESSAGE } from '../utils/passwordPolicy.js';
 
+/**
+ * Creates the initial admin account.
+ *
+ * Credentials are taken from the environment rather than hardcoded, so that a
+ * deployment never ships with a publicly known password. The password is also
+ * no longer written to the log files.
+ *
+ *   ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='...' npm run setup-admin
+ */
 const setupAdmin = async () => {
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    logger.error(
+      'ADMIN_EMAIL and ADMIN_PASSWORD must be set. Example:\n' +
+      "  ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='<strong password>' npm run setup-admin"
+    );
+    process.exit(1);
+  }
+
+  const passwordCheck = validatePassword(password);
+  if (!passwordCheck.valid) {
+    logger.error(`ADMIN_PASSWORD is too weak. ${PASSWORD_REQUIREMENTS_MESSAGE}`);
+    process.exit(1);
+  }
+
+  if (!process.env.MONGODB_URI) {
+    logger.error('MONGODB_URI is not configured');
+    process.exit(1);
+  }
+
   try {
-    // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hospital_management', {
+    await mongoose.connect(process.env.MONGODB_URI, {
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
@@ -14,49 +45,32 @@ const setupAdmin = async () => {
 
     logger.info('Connected to MongoDB');
 
-    // Check if admin already exists
     const existingAdmin = await User.findOne({ role: 'admin' });
     if (existingAdmin) {
       logger.info('Admin user already exists');
       logger.info(`Admin Email: ${existingAdmin.email}`);
       logger.info(`Admin Name: ${existingAdmin.firstName} ${existingAdmin.lastName}`);
+      await mongoose.connection.close();
       process.exit(0);
     }
 
-    // Create admin user
-    const adminData = {
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@hospital.com',
-      password: 'Admin123!',
+    const admin = await User.create({
+      firstName: process.env.ADMIN_FIRST_NAME || 'Admin',
+      lastName: process.env.ADMIN_LAST_NAME || 'User',
+      email,
+      password,
       role: 'admin',
       department: 'Administration',
-      phone: '+1234567890',
-      dateOfBirth: new Date('1990-01-01'),
-      gender: 'other',
       isEmailVerified: true,
       isActive: true,
-      permissions: [
-        'read:patients', 'write:patients', 'delete:patients',
-        'read:doctors', 'write:doctors', 'delete:doctors',
-        'read:appointments', 'write:appointments', 'delete:appointments',
-        'read:users', 'write:users', 'delete:users',
-        'read:dashboard', 'write:dashboard',
-        'read:reports', 'write:reports',
-        'read:settings', 'write:settings',
-        'read:visits', 'write:visits', 'delete:visits',
-        'start:visits', 'end:visits'
-      ]
-    };
-
-    const admin = await User.create(adminData);
+    });
 
     logger.info('Admin user created successfully!');
     logger.info(`Admin Email: ${admin.email}`);
-    logger.info(`Admin Password: ${adminData.password}`);
     logger.info(`Admin Name: ${admin.firstName} ${admin.lastName}`);
-    logger.info('Please change the password after first login');
+    logger.info('Sign in with the password supplied via ADMIN_PASSWORD, then change it.');
 
+    await mongoose.connection.close();
     process.exit(0);
   } catch (error) {
     logger.error('Error setting up admin user:', error);
@@ -64,5 +78,4 @@ const setupAdmin = async () => {
   }
 };
 
-// Run the setup
 setupAdmin();

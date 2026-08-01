@@ -28,12 +28,15 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please add a password'],
-    minlength: 6,
+    minlength: [8, 'Password must be at least 8 characters'],
     select: false
   },
   role: {
     type: String,
-    enum: ['admin', 'doctor', 'nurse', 'receptionist', 'pharmacist', 'radiologist', 'surgeon', 'lab_technician', 'mortuary_attendant'],
+    // 'user' is the least-privileged default: it maps to no permissions in
+    // hasPermission() and is not accepted by any authorize() call, so a
+    // self-registered account is inert until an admin assigns a real role.
+    enum: ['user', 'admin', 'doctor', 'nurse', 'receptionist', 'pharmacist', 'radiologist', 'surgeon', 'lab_technician', 'mortuary_attendant'],
     default: 'user'
   },
   employeeId: {
@@ -104,11 +107,15 @@ const userSchema = new mongoose.Schema({
 
 // Encrypt password using bcrypt
 userSchema.pre('save', async function (next) {
+  // Without the return, an unmodified password gets re-hashed on every save,
+  // which either throws (password not selected) or double-hashes it (locking
+  // the account out permanently).
   if (!this.isModified('password')) {
-    next();
+    return next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 // Check if the account is currently locked
@@ -134,8 +141,10 @@ userSchema.methods.resetLoginAttempts = async function() {
 
 // Sign JWT and return
 userSchema.methods.getSignedJwtToken = function () {
+  // An unset JWT_EXPIRE would mint a token that never expires, so fall back
+  // to a bounded lifetime rather than passing undefined through to jwt.sign.
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
+    expiresIn: process.env.JWT_EXPIRE || '8h'
   });
 };
 
