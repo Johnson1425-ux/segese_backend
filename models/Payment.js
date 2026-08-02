@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { nextSequence, highestExisting } from '../utils/sequence.js';
 
 const paymentSchema = new mongoose.Schema({
   paymentNumber: {
@@ -106,23 +107,19 @@ paymentSchema.index({ invoice: 1, status: 1 });
 paymentSchema.index({ paymentDate: -1 });
 
 // Static method to generate payment number
-paymentSchema.statics.generatePaymentNumber = async function() {
+paymentSchema.statics.generatePaymentNumber = async function(session) {
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
-  
-  const lastPayment = await this.findOne({
-    paymentNumber: new RegExp(`^PAY-${year}${month}${day}`)
-  }).sort({ paymentNumber: -1 });
-  
-  let sequence = 1;
-  if (lastPayment) {
-    const lastSequence = parseInt(lastPayment.paymentNumber.split('-')[2]);
-    sequence = lastSequence + 1;
-  }
-  
-  return `PAY-${year}${month}${day}-${String(sequence).padStart(4, '0')}`;
+  const prefix = `PAY-${year}${month}${day}-`;
+
+  const sequence = await nextSequence(`payment:${year}${month}${day}`, {
+    session,
+    seedFrom: () => highestExisting(this, 'paymentNumber', prefix),
+  });
+
+  return `${prefix}${String(sequence).padStart(4, '0')}`;
 };
 
 // Method to process refund

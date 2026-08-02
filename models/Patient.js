@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { nextSequence, highestExisting } from '../utils/sequence.js';
 
 const patientSchema = new mongoose.Schema({
   firstName: {
@@ -218,22 +219,13 @@ patientSchema.index({ assignedDoctor: 1 });
 patientSchema.pre('save', async function(next) {
   if (this.isNew && !this.patientId) {
     const year = new Date().getFullYear();
-    
-    // Find the patient with the highest patientId for the current year
-    const lastPatient = await this.constructor.findOne({
-      patientId: { $regex: `^P${year}` }
-    })
-    .sort({ patientId: -1 })
-    .limit(1);
-    
-    let nextNumber = 1;
-    if (lastPatient && lastPatient.patientId) {
-      // Extract the number from the last patient ID (e.g., "P20250002" -> 2)
-      const lastNumber = parseInt(lastPatient.patientId.substring(5)); // Skip "P2025"
-      nextNumber = lastNumber + 1;
-    }
-    
-    this.patientId = `P${year}${nextNumber.toString().padStart(4, '0')}`;
+    const prefix = `P${year}`;
+
+    const sequence = await nextSequence(`patient:${year}`, {
+      seedFrom: () => highestExisting(this.constructor, 'patientId', prefix),
+    });
+
+    this.patientId = `${prefix}${String(sequence).padStart(4, '0')}`;
   }
   next();
 });

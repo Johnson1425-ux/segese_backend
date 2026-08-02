@@ -6,6 +6,7 @@ import { MedicineBatch } from '../models/MedicineBatch.js';
 import IPDRecord from '../models/IPDRecord.js';
 import Invoice from '../models/Invoice.js';
 import logger from '../utils/logger.js';
+import { deductFromBatches } from '../utils/deductStock.js';
 
 // @desc    Get all dispensing records
 // @route   GET /api/dispensing
@@ -191,43 +192,18 @@ export const dispensePrescription = async (req, res) => {
       if (batches.length === 0) {
         stockWarning = `No active batches found for ${medicineDoc.name}`;
       } else {
-        let remainingToDispense = quantityToDispense;
+        const result = await deductFromBatches({
+          medicineId: medicineDoc._id,
+          quantity: quantityToDispense,
+          reason: `Prescription dispensing (Rx: ${prescriptionId})`,
+          patient: visit.patient._id,
+          performedBy: req.user._id,
+        });
 
-        // Deduct from batches (FIFO)
-        for (const batch of batches) {
-          if (remainingToDispense <= 0) break;
+        batchesUsed = result.batchesUsed;
 
-          const deductFromThisBatch = Math.min(remainingToDispense, batch.quantityRemaining);
-          
-          batch.quantityRemaining -= deductFromThisBatch;
-          
-          if (batch.quantityRemaining <= 0) {
-            batch.status = 'depleted';
-            batch.quantityRemaining = 0;
-          }
-          
-          await batch.save();
-
-          // Create stock movement
-          await StockMovement.create({
-            medicine: medicineDoc._id,
-            batch: batch._id,
-            type: 'OUT',
-            quantity: deductFromThisBatch,
-            reason: `Prescription dispensing (Rx: ${prescriptionId})`,
-            patient: visit.patient._id,
-            performedBy: req.user._id,
-          });
-
-          batchesUsed.push({
-            batchNumber: batch.batchNumber,
-            quantity: deductFromThisBatch
-          });
-          remainingToDispense -= deductFromThisBatch;
-        }
-
-        if (remainingToDispense > 0) {
-          stockWarning = `Partially dispensed: ${quantityToDispense - remainingToDispense} of ${quantityToDispense} units (insufficient stock)`;
+        if (result.remaining > 0) {
+          stockWarning = `Partially dispensed: ${quantityToDispense - result.remaining} of ${quantityToDispense} units (insufficient stock)`;
         }
       }
     }
@@ -534,42 +510,17 @@ export const createDispensingRecord = async (req, res, next) => {
         });
       }
 
-      let remainingToDispense = quantityToDispense;
-      const stockMovements = [];
+      const deduction = await deductFromBatches({
+        medicineId: medicineDoc._id,
+        quantity: quantityToDispense,
+        reason: `Prescription dispensing${prescription ? ` (Rx: ${prescription})` : ''}`,
+        patient: patient,
+        performedBy: issuedBy || req.user?._id || req.user?.id,
+      });
 
-      for (const batch of batches) {
-        if (remainingToDispense <= 0) break;
-
-        const deductFromThisBatch = Math.min(remainingToDispense, batch.quantityRemaining);
-        
-        batch.quantityRemaining -= deductFromThisBatch;
-        
-        if (batch.quantityRemaining <= 0) {
-          batch.status = 'depleted';
-          batch.quantityRemaining = 0;
-        }
-        
-        await batch.save();
-        
-        console.log(`Updated batch ${batch.batchNumber}: Deducted ${deductFromThisBatch}, Remaining: ${batch.quantityRemaining}`);
-
-        const movement = await StockMovement.create({
-          medicine: medicineDoc._id,
-          batch: batch._id,
-          type: 'OUT',
-          quantity: deductFromThisBatch,
-          reason: `Prescription dispensing${prescription ? ` (Rx: ${prescription})` : ''}`,
-          patient: patient,
-          performedBy: issuedBy || req.user?._id || req.user?.id,
-        });
-
-        stockMovements.push(movement);
-        batchesUsed.push({
-          batchNumber: batch.batchNumber,
-          quantity: deductFromThisBatch
-        });
-        remainingToDispense -= deductFromThisBatch;
-      }
+      batchesUsed = deduction.batchesUsed;
+      const stockMovements = deduction.movements;
+      const remainingToDispense = deduction.remaining;
 
       // === NEW: CHECK IF PATIENT IS IN IPD AND ADD CHARGE ===
       let ipdBillingInfo = null;

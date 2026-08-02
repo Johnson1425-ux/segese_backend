@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { nextSequence, highestExisting } from '../utils/sequence.js';
 
 // Sub-schema for Vital Signs
 const vitalSignsSchema = new mongoose.Schema({
@@ -124,9 +125,16 @@ const visitSchema = new mongoose.Schema({
 // Pre-save middleware to generate visit ID
 visitSchema.pre('save', async function(next) {
   if (this.isNew && !this.visitId) {
+    // Previously derived from countDocuments(), which both collided under
+    // concurrency and reissued identifiers of deleted visits.
     const year = new Date().getFullYear().toString().slice(-2);
-    const count = await this.constructor.countDocuments();
-    this.visitId = `V${year}${(count + 1).toString().padStart(5, '0')}`;
+    const prefix = `V${year}`;
+
+    const sequence = await nextSequence(`visit:${year}`, {
+      seedFrom: () => highestExisting(this.constructor, 'visitId', prefix),
+    });
+
+    this.visitId = `${prefix}${String(sequence).padStart(5, '0')}`;
   }
   next();
 });
