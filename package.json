@@ -30,6 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
+    "multer": "^2.2.0",
     "resend": "^4.0.0",
     "stripe": "^22.4.0",
     "winston": "^3.11.0"

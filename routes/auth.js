@@ -172,6 +172,67 @@ router.get('/verify-email/:token', async (req, res) => {
   }
 });
 
+// @desc    Resend the email-verification link
+// @route   POST /api/auth/resend-verification
+// @access  Public
+router.post('/resend-verification', authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    // Answered identically whether or not the account exists, and whether or
+    // not it is already verified, so this cannot be used to probe for
+    // registered addresses.
+    const genericResponse = {
+      success: true,
+      data: 'If that address needs verification, a new link has been sent.'
+    };
+
+    if (!user || user.isEmailVerified) {
+      logger.info(`Resend verification requested for ${email} (no action taken)`);
+      return res.status(200).json(genericResponse);
+    }
+
+    const verificationToken = user.getVerificationToken();
+    await user.save({ validateBeforeSave: false });
+
+    const verifyURL = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Email Verification',
+        message: `Please verify your email by clicking the following link: \n\n ${verifyURL}`,
+      });
+    } catch (err) {
+      user.verificationToken = undefined;
+      user.verificationTokenExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      logger.error('Verification email could not be resent', {
+        recipient: user.email,
+        error: err.message
+      });
+    }
+
+    res.status(200).json(genericResponse);
+  } catch (error) {
+    logger.error('Resend verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
 // @desc    Login user
 // @route   POST /api/auth/login
 router.post('/login', authLimiter, async (req, res) => {

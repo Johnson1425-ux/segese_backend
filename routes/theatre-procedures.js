@@ -230,7 +230,7 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
         await procedure.deleteOne();
 
         res.status(200).json({
-            status: 'error',
+            status: 'success',
             message: 'Theatre procedure deleted successfully'
         });
     } catch (error) {
@@ -241,5 +241,165 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
         });
     }
 });
+
+// @desc    Record a medication administered for a procedure
+// @route   POST /api/theatre-procedures/:id/medications
+// @access  Private (admin, surgeon, doctor, nurse)
+router.post(
+  '/:id/medications',
+  protect,
+  authorize('admin', 'surgeon', 'doctor', 'nurse'),
+  async (req, res) => {
+    try {
+      const { medication, dosage, frequency, startDate, endDate, notes } = req.body;
+
+      if (!medication) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Medication name is required'
+        });
+      }
+
+      const procedure = await TheatreProcedure.findById(req.params.id);
+
+      if (!procedure) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Theatre procedure not found'
+        });
+      }
+
+      procedure.medications.push({
+        medication,
+        dosage,
+        frequency,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        notes,
+        recordedBy: req.user._id
+      });
+
+      await procedure.save();
+
+      res.status(201).json({
+        status: 'success',
+        message: 'Medication recorded successfully',
+        data: procedure.medications[procedure.medications.length - 1]
+      });
+    } catch (error) {
+      logger.error('Add theatre procedure medication error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server error'
+      });
+    }
+  }
+);
+
+// @desc    Record a diagnosis against a procedure
+// @route   POST /api/theatre-procedures/:id/diagnosis
+// @access  Private (admin, surgeon, doctor)
+router.post(
+  '/:id/diagnosis',
+  protect,
+  authorize('admin', 'surgeon', 'doctor'),
+  async (req, res) => {
+    try {
+      const { condition, notes } = req.body;
+
+      if (!condition) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Condition is required'
+        });
+      }
+
+      const procedure = await TheatreProcedure.findById(req.params.id);
+
+      if (!procedure) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Theatre procedure not found'
+        });
+      }
+
+      procedure.diagnoses.push({
+        condition,
+        notes,
+        recordedBy: req.user._id
+      });
+
+      await procedure.save();
+
+      res.status(201).json({
+        status: 'success',
+        message: 'Diagnosis recorded successfully',
+        data: procedure.diagnoses[procedure.diagnoses.length - 1]
+      });
+    } catch (error) {
+      logger.error('Add theatre procedure diagnosis error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server error'
+      });
+    }
+  }
+);
+
+// @desc    Complete a procedure
+// @route   PUT /api/theatre-procedures/:id/discharge
+// @access  Private (admin, surgeon)
+router.put(
+  '/:id/discharge',
+  protect,
+  authorize('admin', 'surgeon'),
+  async (req, res) => {
+    try {
+      const { dischargeReason, dischargeSummary } = req.body;
+
+      const procedure = await TheatreProcedure.findById(req.params.id);
+
+      if (!procedure) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Theatre procedure not found'
+        });
+      }
+
+      if (procedure.status === 'completed') {
+        return res.status(400).json({
+          status: 'error',
+          message: 'This procedure has already been completed'
+        });
+      }
+
+      procedure.status = 'completed';
+      procedure.completion = {
+        reason: dischargeReason || 'recovered',
+        summary: dischargeSummary,
+        completedBy: req.user._id,
+        completedAt: new Date()
+      };
+
+      await procedure.save();
+
+      logger.info(
+        `Theatre procedure ${procedure.procedureNumber} completed by ${req.user._id}`
+      );
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Procedure completed successfully',
+        data: procedure
+      });
+    } catch (error) {
+      logger.error('Complete theatre procedure error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Server error'
+      });
+    }
+  }
+);
 
 export default router;
