@@ -55,6 +55,7 @@ import incomingItemsRoutes from './routes/incomingItems.js';
 import corpsesRoutes from './routes/corpses.js';
 import cabinetRoutes from './routes/cabinets.js';
 import releaseRoutes from './routes/releases.js';
+import uploadRoutes from './routes/upload.js';
 
 // Load environment variables
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -232,6 +233,7 @@ app.use('/api/incoming-items', incomingItemsRoutes);
 app.use('/api/corpses', corpsesRoutes);
 app.use('/api/cabinets', cabinetRoutes);
 app.use('/api/releases', releaseRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

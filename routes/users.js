@@ -14,12 +14,32 @@ const router = express.Router();
 router.get('/', protect, authorize('admin'), async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    // Capped so a caller cannot ask for the entire collection in one request.
+    const limit = Math.min(parseInt(req.query.limit) || 10, 100);
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await User.countDocuments();
 
-    const users = await User.find()
+    // Search across the fields the user list is browsed by. Without this the
+    // client could only filter the page it had already loaded, so anyone past
+    // the first page was unreachable.
+    const query = {};
+    if (req.query.search) {
+      // Escaped: an unescaped user string is a regular expression, which lets
+      // a caller send a pattern that is expensive to evaluate.
+      const escaped = String(req.query.search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const term = new RegExp(escaped, 'i');
+      query.$or = [
+        { firstName: term },
+        { lastName: term },
+        { email: term },
+        { role: term },
+        { department: term },
+      ];
+    }
+
+    const total = await User.countDocuments(query);
+
+    const users = await User.find(query)
       .select('-password')
       .skip(startIndex)
       .limit(limit)
@@ -45,6 +65,12 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
     res.status(200).json({
       status: 'success',
       count: users.length,
+      // `total` and `totalPages` were computed but never returned, so the
+      // client had no way to know more users existed.
+      total,
+      page,
+      limit,
+      totalPages: Math.max(1, Math.ceil(total / limit)),
       pagination,
       data: users
     });

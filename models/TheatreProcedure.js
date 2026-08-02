@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { nextSequence, highestExisting } from '../utils/sequence.js';
 
 const theatreProcedureSchema = new mongoose.Schema({
     procedureNumber: {
@@ -52,6 +53,36 @@ const theatreProcedureSchema = new mongoose.Schema({
     post_op_notes: {
         type: String
     },
+    // Medications administered during or around the procedure. The theatre UI
+    // has always had a form for this; there was no route or field behind it.
+    medications: [{
+        medication: { type: String, required: true },
+        dosage: String,
+        frequency: String,
+        startDate: Date,
+        endDate: Date,
+        notes: String,
+        recordedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        recordedAt: { type: Date, default: Date.now }
+    }],
+    // Diagnoses recorded against the procedure. The UI previously posted these
+    // to /ipd-records/:id/diagnosis, but a theatre procedure has no IPD record
+    // to attach to, so they belong here.
+    diagnoses: [{
+        condition: { type: String, required: true },
+        notes: String,
+        recordedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        recordedAt: { type: Date, default: Date.now }
+    }],
+    completion: {
+        reason: {
+            type: String,
+            enum: ['recovered', 'referred', 'deceased', 'cancelled', 'other']
+        },
+        summary: String,
+        completedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        completedAt: Date
+    },
     isActive: {
         type: Boolean,
         default: true
@@ -64,14 +95,16 @@ const theatreProcedureSchema = new mongoose.Schema({
 
 theatreProcedureSchema.pre('save', async function(next) {
   if (this.isNew && !this.procedureNumber) {
+    // Was a countDocuments() of the current year, which collided under
+    // concurrency and reissued numbers after a procedure was deleted.
     const year = new Date().getFullYear();
-    const count = await this.constructor.countDocuments({
-      createdAt: {
-        $gte: new Date(year, 0, 1),
-        $lt: new Date(year + 1, 0, 1)
-      }
+    const prefix = `PR${year}`;
+
+    const sequence = await nextSequence(`theatre-procedure:${year}`, {
+      seedFrom: () => highestExisting(this.constructor, 'procedureNumber', prefix),
     });
-    this.procedureNumber = `PR${year}${(count + 1).toString().padStart(5, '0')}`;
+
+    this.procedureNumber = `${prefix}${String(sequence).padStart(5, '0')}`;
   }
   next();
 });
