@@ -9,8 +9,8 @@ import compression from 'compression';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss-clean';
 import hpp from 'hpp';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -56,6 +56,16 @@ import releaseRoutes from './routes/releases.js';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 process.env.TZ = 'Africa/Dar-es-Salaam';
 
+// Fail fast on missing required configuration. Without this, a missing
+// JWT_SECRET only surfaces as blanket 401s at request time.
+const REQUIRED_ENV = ['JWT_SECRET', 'MONGODB_URI'];
+const missingEnv = REQUIRED_ENV.filter((key) => !process.env[key]);
+
+if (missingEnv.length > 0) {
+  logger.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
+  process.exit(1);
+}
+
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,12 +108,16 @@ app.use('/api/', limiter);
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
-// Data sanitization against XSS
-app.use(xss());
+// NOTE: xss-clean was removed here. It is unmaintained (last release 2022) and
+// it rewrites every incoming string, which corrupts legitimate clinical text
+// such as "BP < 120" in notes and dosages. This is a JSON API: XSS is defended
+// against by escaping on output plus the CSP configured in helmet above.
+// Do not re-add input-side HTML mangling without a specific reason.
 
 // Prevent parameter pollution
 app.use(hpp());
