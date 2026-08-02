@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { nextSequence, highestExisting } from '../utils/sequence.js';
 
 const ReleaseSchema = new mongoose.Schema({
   corpseId: {
@@ -75,7 +76,8 @@ const ReleaseSchema = new mongoose.Schema({
 
 ReleaseSchema.index({ status: 1, releaseDate: 1 });
 ReleaseSchema.index({ corpseId: 1 });
-ReleaseSchema.index({ receiptNumber: 1 });
+// receiptNumber is already indexed by `unique: true` on the field; declaring
+// it again here made mongoose warn about a duplicate index at startup.
 
 // Generate receipt number before saving
 ReleaseSchema.pre('save', async function(next) {
@@ -84,19 +86,15 @@ ReleaseSchema.pre('save', async function(next) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    
-    // Find the latest release for today to get sequential number
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    const count = await mongoose.model('Release').countDocuments({
-      createdAt: { $gte: today, $lt: tomorrow }
+    const prefix = `REL-${year}${month}${day}-`;
+
+    // Was derived from a same-day countDocuments(), which collided under
+    // concurrency and reissued numbers after a release was deleted.
+    const sequence = await nextSequence(`release:${year}${month}${day}`, {
+      seedFrom: () => highestExisting(mongoose.model('Release'), 'receiptNumber', prefix),
     });
-    
-    const sequential = String(count + 1).padStart(3, '0');
-    this.receiptNumber = `REL-${year}${month}${day}-${sequential}`;
+
+    this.receiptNumber = `${prefix}${String(sequence).padStart(3, '0')}`;
   }
   next();
 });

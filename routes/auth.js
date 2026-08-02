@@ -19,6 +19,9 @@ const authLimiter = rateLimit(authRateLimit);
 const GENERIC_RESET_RESPONSE =
   'If an account exists for that email address, a password reset link has been sent.';
 
+const GENERIC_REGISTER_RESPONSE =
+  'Registration received. Check your email to continue.';
+
 // Compared against when no user matches, to keep the failure path's timing
 // close to the real one.
 const DUMMY_HASH = bcrypt.hashSync('unused-placeholder-value', 10);
@@ -47,12 +50,31 @@ router.post('/register', authLimiter, async (req, res) => {
       });
     }
 
-    // Check if user already exists
+    // An "already exists" reply lets anyone test which addresses are
+    // registered. Answer the same way in both cases and tell the existing
+    // account by email instead.
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User already exists'
+      logger.info(`Registration attempted for existing address: ${email}`);
+
+      try {
+        await sendEmail({
+          email,
+          subject: 'Registration attempt on your account',
+          message:
+            'Someone tried to register an account with this email address. ' +
+            'Your existing account is unchanged. If this was you, use the ' +
+            'password reset link on the sign-in page instead.',
+        });
+      } catch (err) {
+        logger.error('Could not send duplicate-registration notice', {
+          error: err.message,
+        });
+      }
+
+      return res.status(201).json({
+        success: true,
+        data: GENERIC_REGISTER_RESPONSE
       });
     }
 
@@ -80,18 +102,24 @@ router.post('/register', authLimiter, async (req, res) => {
         message,
       });
       
-      res.status(201).json({ 
-        success: true, 
-        data: 'User registered successfully. Verification email sent' 
+      res.status(201).json({
+        success: true,
+        data: GENERIC_REGISTER_RESPONSE
       });
     } catch (err) {
       // If email fails, clear the token and handle error
       user.verificationToken = undefined;
       await user.save({ validateBeforeSave: false });
-      
-      res.status(500).json({ 
-        success: false,
-        message: 'User registered but verification email could not be sent' 
+
+      // Same reply as every other outcome, so the response cannot be used to
+      // distinguish a new address from an existing one. The cause is logged.
+      logger.error('Verification email could not be sent', {
+        recipient: user.email,
+        error: err.message
+      });
+      res.status(201).json({
+        success: true,
+        data: GENERIC_REGISTER_RESPONSE
       });
     }
   } catch (error) {

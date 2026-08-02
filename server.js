@@ -14,6 +14,10 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Must come before anything that compiles a mongoose model: global plugins
+// only apply to schemas registered after they are installed.
+import './utils/queryGuard.js';
+
 // Import middleware and routes
 import connectDB from './config/database.js';
 import errorHandler from './middleware/errorHandler.js';

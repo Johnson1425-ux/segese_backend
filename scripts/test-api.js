@@ -1,5 +1,5 @@
-const axios = require('axios');
-const logger = require('../utils/logger');
+import axios from 'axios';
+import logger from '../utils/logger.js';
 
 const BASE_URL = 'http://localhost:5000/api';
 let authToken = '';

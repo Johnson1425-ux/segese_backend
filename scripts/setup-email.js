@@ -1,6 +1,6 @@
-const readline = require('readline');
-const fs = require('fs');
-const path = require('path');
+import readline from 'readline';
+import fs from 'fs';
+import path from 'path';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -154,7 +154,7 @@ const setupEmail = async () => {
   // Test email configuration
   try {
     process.env = { ...process.env, ...emailConfig };
-    const sendEmail = require('./utils/sendEmail');
+    const { default: sendEmail } = await import('../utils/sendEmail.js');
     
     const testEmail = await question('Enter email address to send test email: ');
     
@@ -195,4 +195,4 @@ if (require.main === module) {
   setupEmail().catch(console.error);
 }
 
-module.exports = { setupEmail };
+export { setupEmail };

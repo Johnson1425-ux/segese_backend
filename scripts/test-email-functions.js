@@ -1,56 +1,17 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const path = require('path');
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import User from '../models/User.js';
+import sendEmail from '../utils/sendEmail.js';
 
-// Load env vars
-dotenv.config();
-
-// Try to require User model and email utility
-let User, sendEmail;
-try {
-  User = require('../models/User');
-} catch (error) {
-  console.log('⚠️  User model not found at ../models/User, trying ./models/User');
-  try {
-    User = require('./models/User');
-  } catch (error2) {
-    console.error('❌ Could not find User model. Please ensure User.js exists in models/ directory');
-    process.exit(1);
-  }
-}
-
-try {
-  const emailUtil = require('../utils/sendEmail');
-  sendEmail = emailUtil.sendEmail;
-} catch (error) {
-  console.log('⚠️  Email utility not found at ../utils/sendEmail, trying ./utils/sendEmail');
-  try {
-    const emailUtil = require('./utils/sendEmail');
-    sendEmail = emailUtil.sendEmail;
-  } catch (error2) {
-    console.error('❌ Could not find email utility. Creating mock sendEmail function for testing...');
-    // Mock sendEmail function for testing
-    sendEmail = async (options) => {
-      console.log('📧 Mock Email Sent:', {
-        to: options.to,
-        subject: options.subject,
-        template: options.template,
-        context: options.context
-      });
-      return Promise.resolve();
-    };
-  }
-}
-
-// Load env vars
-dotenv.config();
+// The previous version tried several require() paths as a cwd fallback and
+// read `.sendEmail` off the module, but sendEmail is a default export, so the
+// binding was always undefined. ESM resolves relative to this file, so the
+// fallbacks are unnecessary and the import above is the real function.
 
 // Connect to MongoDB
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {

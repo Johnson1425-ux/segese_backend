@@ -139,8 +139,10 @@ visitSchema.pre('save', async function(next) {
   next();
 });
 
-// Virtual to get financial summary from invoice
-visitSchema.virtual('financialSummary').get(async function() {
+// An async getter returns a Promise, so this could never serialise through
+// toJSON and silently produced a pending Promise wherever it was read. It is
+// a method now, like getPaymentSummary below.
+visitSchema.methods.getFinancialSummary = async function() {
   if (!this.invoice) return null;
   
   const Invoice = mongoose.model('Invoice');
@@ -153,7 +155,7 @@ visitSchema.virtual('financialSummary').get(async function() {
     balanceDue: invoice.balanceDue,
     status: invoice.status
   } : null;
-});
+};
 
 // Method to get payment summary
 visitSchema.methods.getPaymentSummary = function() {
