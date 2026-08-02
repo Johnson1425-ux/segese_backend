@@ -7,7 +7,13 @@
  */
 export const MIN_PASSWORD_LENGTH = 8;
 
-const COMPLEXITY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+/**
+ * The original rule demanded one of `@$!%*?&` specifically, so a password
+ * using any other punctuation — `#`, `~`, `-` — was rejected despite being
+ * just as strong. Any non-alphanumeric character now satisfies the
+ * requirement, which only widens what is accepted.
+ */
+const COMPLEXITY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/;
 
 export const PASSWORD_REQUIREMENTS_MESSAGE =
   `Password must be at least ${MIN_PASSWORD_LENGTH} characters and contain an uppercase letter, ` +

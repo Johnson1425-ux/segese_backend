@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { nextSequence, highestExisting } from '../utils/sequence.js';
 
 const invoiceSchema = new mongoose.Schema({
   invoiceNumber: {
@@ -454,22 +455,18 @@ invoiceSchema.methods.getPaymentSummary = function() {
 /**
  * Static method to generate invoice number
  */
-invoiceSchema.statics.generateInvoiceNumber = async function() {
+invoiceSchema.statics.generateInvoiceNumber = async function(session) {
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  
-  const lastInvoice = await this.findOne({
-    invoiceNumber: new RegExp(`^INV-${year}${month}`)
-  }).sort({ invoiceNumber: -1 });
-  
-  let sequence = 1;
-  if (lastInvoice) {
-    const lastSequence = parseInt(lastInvoice.invoiceNumber.split('-')[2]);
-    sequence = lastSequence + 1;
-  }
-  
-  return `INV-${year}${month}-${String(sequence).padStart(5, '0')}`;
+  const prefix = `INV-${year}${month}-`;
+
+  const sequence = await nextSequence(`invoice:${year}${month}`, {
+    session,
+    seedFrom: () => highestExisting(this, 'invoiceNumber', prefix),
+  });
+
+  return `${prefix}${String(sequence).padStart(5, '0')}`;
 };
 
 /**

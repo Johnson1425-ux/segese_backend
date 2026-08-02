@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { nextSequence, highestExisting } from '../utils/sequence.js';
 
 // Sub-schema for Vital Signs
 const vitalSignsSchema = new mongoose.Schema({
@@ -124,15 +125,24 @@ const visitSchema = new mongoose.Schema({
 // Pre-save middleware to generate visit ID
 visitSchema.pre('save', async function(next) {
   if (this.isNew && !this.visitId) {
+    // Previously derived from countDocuments(), which both collided under
+    // concurrency and reissued identifiers of deleted visits.
     const year = new Date().getFullYear().toString().slice(-2);
-    const count = await this.constructor.countDocuments();
-    this.visitId = `V${year}${(count + 1).toString().padStart(5, '0')}`;
+    const prefix = `V${year}`;
+
+    const sequence = await nextSequence(`visit:${year}`, {
+      seedFrom: () => highestExisting(this.constructor, 'visitId', prefix),
+    });
+
+    this.visitId = `${prefix}${String(sequence).padStart(5, '0')}`;
   }
   next();
 });
 
-// Virtual to get financial summary from invoice
-visitSchema.virtual('financialSummary').get(async function() {
+// An async getter returns a Promise, so this could never serialise through
+// toJSON and silently produced a pending Promise wherever it was read. It is
+// a method now, like getPaymentSummary below.
+visitSchema.methods.getFinancialSummary = async function() {
   if (!this.invoice) return null;
   
   const Invoice = mongoose.model('Invoice');
@@ -145,7 +155,7 @@ visitSchema.virtual('financialSummary').get(async function() {
     balanceDue: invoice.balanceDue,
     status: invoice.status
   } : null;
-});
+};
 
 // Method to get payment summary
 visitSchema.methods.getPaymentSummary = function() {

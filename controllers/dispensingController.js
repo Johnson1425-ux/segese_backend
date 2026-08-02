@@ -6,6 +6,8 @@ import { MedicineBatch } from '../models/MedicineBatch.js';
 import IPDRecord from '../models/IPDRecord.js';
 import Invoice from '../models/Invoice.js';
 import logger from '../utils/logger.js';
+import { deductFromBatches } from '../utils/deductStock.js';
+import { withTransaction } from '../utils/withTransaction.js';
 
 // @desc    Get all dispensing records
 // @route   GET /api/dispensing
@@ -155,96 +157,82 @@ export const dispensePrescription = async (req, res) => {
       });
     }
 
-    // Create dispensing record for inventory tracking
-    const dispensingRecord = await Dispensing.create({
-      patient: visit.patient._id,
-      medicine: prescription.medication,
-      quantity: quantity || 1,
-      issuedBy: req.user._id,
-      prescription: prescriptionId,
-      dispensedDate: new Date()
-    });
-
-    // Handle stock deduction
+    // Everything below mutates several collections: the dispensing record,
+    // batch quantities, stock movements, the IPD invoice and the visit. Run
+    // them together so a failure part-way cannot leave stock deducted with no
+    // corresponding charge, or a prescription marked dispensed against stock
+    // that was never taken.
     let stockWarning = null;
-    const medicineDoc = await Medicine.findOne({ 
-      name: { $regex: new RegExp(`^${prescription.medication}$`, 'i') } 
-    });
-
     let batchesUsed = [];
     let medicinePrice = 0;
+    let ipdBillingInfo = null;
+    let dispensingRecord;
 
-    if (medicineDoc && quantity > 0) {
-      const quantityToDispense = Math.abs(quantity);
-      
-      // Get medicine price (from prices.Pharmacy or sellingPrice)
-      medicinePrice = medicineDoc.prices?.Pharmacy || medicineDoc.sellingPrice || 0;
-      
-      // Get active batches for this medicine, sorted by expiry date (FIFO)
-      const batches = await MedicineBatch.find({
-        medicine: medicineDoc._id,
-        status: 'active',
-        quantityRemaining: { $gt: 0 },
-        expiryDate: { $gt: new Date() }
-      }).sort('expiryDate');
+    await withTransaction(async (session) => {
+      const sessionOpt = session ? { session } : {};
 
-      if (batches.length === 0) {
-        stockWarning = `No active batches found for ${medicineDoc.name}`;
-      } else {
-        let remainingToDispense = quantityToDispense;
+      // Reset per-attempt state: withTransaction may retry the callback on a
+      // transient transaction error, and stale values would otherwise leak
+      // into the retry.
+      stockWarning = null;
+      batchesUsed = [];
+      medicinePrice = 0;
+      ipdBillingInfo = null;
 
-        // Deduct from batches (FIFO)
-        for (const batch of batches) {
-          if (remainingToDispense <= 0) break;
+      // Create dispensing record for inventory tracking
+      [dispensingRecord] = await Dispensing.create(
+        [{
+          patient: visit.patient._id,
+          medicine: prescription.medication,
+          quantity: quantity || 1,
+          issuedBy: req.user._id,
+          prescription: prescriptionId,
+          dispensedDate: new Date()
+        }],
+        sessionOpt
+      );
 
-          const deductFromThisBatch = Math.min(remainingToDispense, batch.quantityRemaining);
-          
-          batch.quantityRemaining -= deductFromThisBatch;
-          
-          if (batch.quantityRemaining <= 0) {
-            batch.status = 'depleted';
-            batch.quantityRemaining = 0;
-          }
-          
-          await batch.save();
+      // Handle stock deduction
+      const medicineDoc = await Medicine.findOne({
+        name: { $regex: new RegExp(`^${prescription.medication}$`, 'i') }
+      }).session(session || null);
 
-          // Create stock movement
-          await StockMovement.create({
-            medicine: medicineDoc._id,
-            batch: batch._id,
-            type: 'OUT',
-            quantity: deductFromThisBatch,
-            reason: `Prescription dispensing (Rx: ${prescriptionId})`,
-            patient: visit.patient._id,
-            performedBy: req.user._id,
-          });
+      if (medicineDoc && quantity > 0) {
+        const quantityToDispense = Math.abs(quantity);
 
-          batchesUsed.push({
-            batchNumber: batch.batchNumber,
-            quantity: deductFromThisBatch
-          });
-          remainingToDispense -= deductFromThisBatch;
-        }
+        // Get medicine price (from prices.Pharmacy or sellingPrice)
+        medicinePrice = medicineDoc.prices?.Pharmacy || medicineDoc.sellingPrice || 0;
 
-        if (remainingToDispense > 0) {
-          stockWarning = `Partially dispensed: ${quantityToDispense - remainingToDispense} of ${quantityToDispense} units (insufficient stock)`;
+        const result = await deductFromBatches({
+          medicineId: medicineDoc._id,
+          quantity: quantityToDispense,
+          reason: `Prescription dispensing (Rx: ${prescriptionId})`,
+          patient: visit.patient._id,
+          performedBy: req.user._id,
+          session,
+        });
+
+        batchesUsed = result.batchesUsed;
+
+        if (result.batchesUsed.length === 0 && result.remaining === quantityToDispense) {
+          stockWarning = `No active batches found for ${medicineDoc.name}`;
+        } else if (result.remaining > 0) {
+          stockWarning = `Partially dispensed: ${quantityToDispense - result.remaining} of ${quantityToDispense} units (insufficient stock)`;
         }
       }
-    }
 
-    // === NEW: CHECK IF PATIENT IS IN IPD AND ADD CHARGE TO INVOICE ===
-    let ipdBillingInfo = null;
-    
-    const ipdRecord = await IPDRecord.findOne({
-      patient: visit.patient._id,
-      status: { $in: ['admitted', 'under_observation', 'critical', 'stable'] }
-    }).populate('billing.invoice');
+      // === CHECK IF PATIENT IS IN IPD AND ADD CHARGE TO INVOICE ===
+      const ipdRecord = await IPDRecord.findOne({
+        patient: visit.patient._id,
+        status: { $in: ['admitted', 'under_observation', 'critical', 'stable'] }
+      })
+        .populate('billing.invoice')
+        .session(session || null);
 
-    if (ipdRecord && ipdRecord.billing && ipdRecord.billing.invoice) {
-      // Patient is in IPD - add medication charge to their invoice
-      try {
-        const invoice = await Invoice.findById(ipdRecord.billing.invoice);
-        
+      if (ipdRecord && ipdRecord.billing && ipdRecord.billing.invoice) {
+        // Patient is in IPD - add medication charge to their invoice
+        const invoice = await Invoice.findById(ipdRecord.billing.invoice).session(session || null);
+
         if (invoice) {
           const totalPrice = quantity * medicinePrice;
           const batchInfo = batchesUsed.length > 0 
@@ -266,12 +254,12 @@ export const dispensePrescription = async (req, res) => {
 
           // Recalculate invoice totals
           invoice.calculateTotals();
-          await invoice.save();
+          await invoice.save(sessionOpt);
 
           // Update IPD billing summary
           ipdRecord.billing.totalAmount = invoice.totalAmount;
           ipdRecord.billing.balance = invoice.balanceDue;
-          await ipdRecord.save();
+          await ipdRecord.save(sessionOpt);
 
           ipdBillingInfo = {
             addedToInvoice: true,
@@ -286,24 +274,17 @@ export const dispensePrescription = async (req, res) => {
             `Admission: ${ipdRecord.admissionNumber}`
           );
         }
-      } catch (ipdError) {
-        logger.error('IPD billing error during dispensing:', ipdError);
-        // Don't fail the dispensing if billing fails - just log it
-        ipdBillingInfo = {
-          addedToInvoice: false,
-          error: 'Failed to add charge to IPD invoice'
-        };
       }
-    }
 
-    // Update prescription status
-    prescription.status = 'Dispensed';
-    prescription.dispensedBy = req.user._id;
-    prescription.dispensedAt = new Date();
-    prescription.dispensingNotes = notes || '';
-    prescription.isActive = false;
+      // Update prescription status
+      prescription.status = 'Dispensed';
+      prescription.dispensedBy = req.user._id;
+      prescription.dispensedAt = new Date();
+      prescription.dispensingNotes = notes || '';
+      prescription.isActive = false;
 
-    await visit.save();
+      await visit.save(sessionOpt);
+    }, 'prescription dispensing');
 
     // Populate references
     await visit.populate([
@@ -534,42 +515,17 @@ export const createDispensingRecord = async (req, res, next) => {
         });
       }
 
-      let remainingToDispense = quantityToDispense;
-      const stockMovements = [];
+      const deduction = await deductFromBatches({
+        medicineId: medicineDoc._id,
+        quantity: quantityToDispense,
+        reason: `Prescription dispensing${prescription ? ` (Rx: ${prescription})` : ''}`,
+        patient: patient,
+        performedBy: issuedBy || req.user?._id || req.user?.id,
+      });
 
-      for (const batch of batches) {
-        if (remainingToDispense <= 0) break;
-
-        const deductFromThisBatch = Math.min(remainingToDispense, batch.quantityRemaining);
-        
-        batch.quantityRemaining -= deductFromThisBatch;
-        
-        if (batch.quantityRemaining <= 0) {
-          batch.status = 'depleted';
-          batch.quantityRemaining = 0;
-        }
-        
-        await batch.save();
-        
-        console.log(`Updated batch ${batch.batchNumber}: Deducted ${deductFromThisBatch}, Remaining: ${batch.quantityRemaining}`);
-
-        const movement = await StockMovement.create({
-          medicine: medicineDoc._id,
-          batch: batch._id,
-          type: 'OUT',
-          quantity: deductFromThisBatch,
-          reason: `Prescription dispensing${prescription ? ` (Rx: ${prescription})` : ''}`,
-          patient: patient,
-          performedBy: issuedBy || req.user?._id || req.user?.id,
-        });
-
-        stockMovements.push(movement);
-        batchesUsed.push({
-          batchNumber: batch.batchNumber,
-          quantity: deductFromThisBatch
-        });
-        remainingToDispense -= deductFromThisBatch;
-      }
+      batchesUsed = deduction.batchesUsed;
+      const stockMovements = deduction.movements;
+      const remainingToDispense = deduction.remaining;
 
       // === NEW: CHECK IF PATIENT IS IN IPD AND ADD CHARGE ===
       let ipdBillingInfo = null;

@@ -38,6 +38,17 @@ export const checkPaymentEligibility = async (req, res, next) => {
       });
     }
 
+    // `patient` is a populated reference, so it is null when the patient
+    // record has been removed. Reading .insurance off it turned that into a
+    // 500 rather than a meaningful error.
+    if (!visit.patient) {
+      logger.error(`Visit ${visit.visitId || visit._id} references a missing patient`);
+      return res.status(409).json({
+        status: 'error',
+        message: 'This visit is not linked to a valid patient record'
+      });
+    }
+
     // Check if patient has insurance
     const hasInsurance = !!(visit.patient.insurance?.provider);
 
