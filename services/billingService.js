@@ -10,6 +10,7 @@ import InsuranceProvider from '../models/InsuranceProvider.js';
 import Notification from '../models/Notification.js';
 import AuditLog from '../models/AuditLog.js';
 import logger from '../utils/logger.js';
+import { withTransaction } from '../utils/withTransaction.js';
 
 class BillingService {
   /**
@@ -235,69 +236,83 @@ class BillingService {
       if (!invoice) {
         throw new Error('Invoice not found');
       }
-      
+
       // Validate payment amount
       if (paymentData.amount > invoice.balanceDue) {
         throw new Error('Payment amount exceeds balance due');
       }
-      
-      // Generate payment number
-      const paymentNumber = await Payment.generatePaymentNumber();
-      
-      // Create global payment record
-      const payment = new Payment({
-        ...paymentData,
-        paymentNumber,
-        processedBy: userId,
-        status: 'processing'
-      });
-      
-      // Process payment based on method
+
+      // The gateway call happens before the transaction opens. It reaches a
+      // third party that cannot participate in a rollback, and holding a
+      // transaction open across a network round trip would keep locks for the
+      // duration of someone else's outage.
+      let gatewayResponse = null;
+      let status = 'completed';
+
       if (paymentData.method === 'credit_card' || paymentData.method === 'debit_card') {
-        const gatewayResponse = await this.processCardPayment(paymentData);
-        payment.transactionId = gatewayResponse.transactionId;
-        payment.gatewayResponse = gatewayResponse;
-        payment.status = gatewayResponse.success ? 'completed' : 'failed';
+        gatewayResponse = await this.processCardPayment(paymentData);
+        status = gatewayResponse.success ? 'completed' : 'failed';
       } else if (paymentData.method === 'online') {
-        const gatewayResponse = await this.processOnlinePayment(paymentData);
-        payment.transactionId = gatewayResponse.transactionId;
-        payment.gatewayResponse = gatewayResponse;
-        payment.status = gatewayResponse.success ? 'completed' : 'failed';
-      } else {
-        payment.status = 'completed';
+        gatewayResponse = await this.processOnlinePayment(paymentData);
+        status = gatewayResponse.success ? 'completed' : 'failed';
       }
-      
-      await payment.save();
-      
-      // === SYNC: Update invoice if payment successful ===
+
+      // Everything below either all lands or none of it does. Previously the
+      // payment could be saved and the invoice update then fail, leaving money
+      // recorded against an invoice that still showed the full balance due.
+      const payment = await withTransaction(async (session) => {
+        const sessionOpt = session ? { session } : {};
+
+        const paymentNumber = await Payment.generatePaymentNumber(session);
+
+        const [created] = await Payment.create(
+          [{
+            ...paymentData,
+            paymentNumber,
+            processedBy: userId,
+            status,
+            ...(gatewayResponse
+              ? { transactionId: gatewayResponse.transactionId, gatewayResponse }
+              : {}),
+          }],
+          sessionOpt
+        );
+
+        if (created.status === 'completed') {
+          // Re-read inside the transaction so the balance we mutate is the one
+          // the transaction will commit against.
+          const txInvoice = await Invoice.findById(paymentData.invoice).session(session || null);
+          txInvoice.addPayment(created.amount);
+          await txInvoice.save(sessionOpt);
+
+          if (txInvoice.visit) {
+            await this._checkAndUpdateVisitStatus(txInvoice, session);
+          }
+        }
+
+        await AuditLog.log({
+          userId,
+          action: 'CREATE',
+          entityType: 'Payment',
+          entityId: created._id,
+          description: `Processed payment ${paymentNumber} of Tsh. ${created.amount}`,
+          metadata: {
+            paymentNumber,
+            amount: created.amount,
+            method: created.method,
+            status: created.status
+          }
+        });
+
+        return created;
+      }, 'payment processing');
+
+      // Sent only after the payment is durably committed — a receipt for a
+      // transaction that later rolled back cannot be recalled.
       if (payment.status === 'completed') {
-        // Use the legacy addPayment method which handles item marking
-        invoice.addPayment(payment.amount);
-        await invoice.save();
-        
         await this.sendPaymentReceipt(payment, invoice);
       }
 
-      // Check if consultation was paid and update visit
-      if (payment.status === 'completed' && invoice.visit) {
-        await this._checkAndUpdateVisitStatus(invoice);
-      }
-      
-      // Create audit log
-      await AuditLog.log({
-        userId,
-        action: 'CREATE',
-        entityType: 'Payment',
-        entityId: payment._id,
-        description: `Processed payment ${paymentNumber} of Tsh. ${payment.amount}`,
-        metadata: { 
-          paymentNumber, 
-          amount: payment.amount,
-          method: payment.method,
-          status: payment.status
-        }
-      });
-      
       return payment;
     } catch (error) {
       logger.error('Process payment error:', error);
@@ -583,10 +598,10 @@ class BillingService {
   /**
    * Check and update visit status after payment
    */
-  async _checkAndUpdateVisitStatus(invoice) {
+  async _checkAndUpdateVisitStatus(invoice, session = null) {
     try {
-      const visit = await Visit.findById(invoice.visit).populate('patient');
-      
+      const visit = await Visit.findById(invoice.visit).populate('patient').session(session);
+
       if (!visit) return;
 
       const hasInsurance = !!(visit.patient?.insurance?.provider);
@@ -601,7 +616,7 @@ class BillingService {
         if (consultationItem && consultationItem.paid) {
           visit.status = 'In Queue';
           visit.consultationFeePaid = true;
-          await visit.save();
+          await visit.save(session ? { session } : {});
           logger.info(`Visit ${visit.visitId} moved to queue after consultation payment`);
         }
       }
